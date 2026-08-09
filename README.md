@@ -1,6 +1,6 @@
 # Recreating Literary Works Using ChatGPT and Evaluating Results with NLP Analysis
 
-An MBA thesis evaluating how well ChatGPT recreates six classic poems in the style of
+A Data Science and Analytical Storytelling thesis evaluating how well ChatGPT recreates six classic poems in the style of
 other poets, scored with sentiment analysis, lexical diversity metrics, and two
 AI-text detectors.
 
