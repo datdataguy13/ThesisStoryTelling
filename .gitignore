@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+/.quarto/
+
+**/*.quarto_ipynb
+
+.DS_Store
+.venv/
+my_env/
+.claude/
+rsconnect/
+*_files/

@@ -1,0 +1,1636 @@
+---
+title: "Recreating Literary Works Using ChatGPT and Evaluating Results with NLP Analysis "
+jupyter: python3
+execute:
+  echo: false
+  warning: false
+format:
+  html:
+    embed-resources: true
+bibliography: "https://api.citedrive.com/bib/8aa8ba97-d8db-4744-b9ca-c8c108734db5/references.bib?x=eyJpZCI6ICI4YWE4YmE5Ny1kOGRiLTQ3NDQtYjljYS1jOGMxMDg3MzRkYjUiLCAidXNlciI6ICIyOTQ2IiwgInNpZ25hdHVyZSI6ICJmZTcyYzY4ZmFkYmRhNWEzNDhjNTYxY2Q5ZTUyMTA4MzRjNGQ2YmUwMzQ4NDQ2NDZmN2FkYjg2OWE5NmM5MDk5In0=/bibliography.bib"
+---
+
+## Introduction
+
+ This study is a deep dive into evaluating ChatGPT's poetic proclivities. Can a cutting-edge chatbot re-create poetic styles effectively? Will it feel authentic to the prompted style? Can it fool the leading AI-generated text detectors? This study will explore these questions, specifically Open-AI's ChatGPT and its specific responses to prompts about a selection of poems. ChatGPT is a Large Language Model that can generate text using different styles for various uses, from asking questions about historical events to troubleshooting coding errors. It is unique in its design because it uses Supervised Learning and Reinforcement Learning to improve its responses. There is a human feedback loop that acts as moderation to reduce biased outputs and help prevent harmful responses [@kargar_2023].
+
+ Supervised Learning is a subset of Machine Learning where models are supervised and manually adjusted. Examples include Regression Models that predict a stock price or a Classification model trying to predict whether the text is AI-generated. Reinforcement Learning comes into play with ChatGPT because Open-AI has dedicated teams adjust the model inputs and refine answers based on feedback from people using the tool. GPT stands for Generative Pre-trained Transformer, and ChatGPT is a large language model that was set up on an extensive neural network architecture with millions of inputs. The text it generates comes from millions of pieces of text it was trained on, and the way it is unique in how it can transform responses with convincing language, making it seem it came from a human.
+
+ The transformer type of neural network is unique in how it treats text. Transformers were designed to help with translating text from one language to another. The leading neural network for translation before transformers was Recurrent Neural Networks (RNN), and in that structure, the order in which words appear is how they are directly translated [@markowitz_2021]. The order of words in text presents a challenge for languages like translating from English to French because words have genders, and adjectives come after nouns in French.
+
+ Transformers can navigate this challenge using positional encoding. Words in the text are given numbers, and their position within a sentence is stored in the data before it is loaded into the network architecture. The transformer then learns the order of words; the more information it is trained on, the more accurate it becomes in predicting the order in which words go. In neural network terms, this is called attention, specifically self-attention [@markowitz_2021]. The high accuracy of predicting the correct sequences of words based on previously trained data gives ChatGPT's responses a more conversationally authentic feel to users.
+
+ Six poems are prompted and recreated using ChatGPT, and each poem will use one of each poet's six styles. This study uses Supervised Learning Classification techniques and is also a Natural Language Processing (NLP) exercise in which original works compare to ChatGPT recreations using various poetic styles. Sentiment analysis compares a poem's original sentiment to ChatGPT's recreations. Lexical measures explore vocabulary richness and diversity within the results, and this study will cover which measures were selected as the most significant for this study's scope. Two Artificial Intelligence (AI) detectors will be evaluated on whether AI-generated poems are convincing enough to pass their current AI detection methods and how convincing the recreations are.
+
+Video for Thesis Defense
+
+```{=html}
+<div style="max-width:720px;">
+<iframe id="thesis-defense-video" width="100%" style="aspect-ratio:16/9;border:0;" src="about:blank" title="Thesis Defense Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+</div>
+<script>
+  document.getElementById("thesis-defense-video").src = "https://www.youtube.com/embed/a3Pnd_-uEGw";
+</script>
+```
+
+[Watch on YouTube](https://www.youtube.com/watch?v=a3Pnd_-uEGw){target="_blank"}
+
+Slides for Presentation
+
+[link to Defense Slides](http://rpubs.com/datadataguy13/1451731){target="_blank"}
+
+## Data Collection and Preparation
+
+Poems were sourced from these sites
+
+1\. "The Raven" by Edgar Allen Poe - [@poe]
+
+2\. "Jabberwocky" by Lewis Carroll - [@carroll]
+
+3\. "Sonnet 18: Shall I compare thee to a summer's day?" by William Shakespeare - [@shakespeare]
+
+4\. "O Captain! My Captain!" by Walt Whitman - [@whitman]
+
+5\. "Still I Rise" by Maya Angelou - [@angelou]
+
+6\. "Do Not Go Gentle Into That Good Night" by Dylan Thomas - [@thomas]
+
+Each poem was loaded into Open-AI's ChatGPT3 chatbot and responses were given for these scenarios [@chat.openai.com]
+
+1.  Tell the original poem: this becomes GPT's version of the poem
+
+2.  Recreate the same poem using another poet's style, for example, "Recreate the Raven by Edgar Allen Poe, using Maya Angelou's style."
+
+3.  This creates seven instances of the same poem, one for the original from the above sources, GPT's version and five instances of the original poem using GPT's rendition of another poet's style for the original.
+
+4.  A row key is created for each permutation. For example, Maya_Angelou_Poets is "Still I Rise" by Maya Angelou and the poets means the original version. Maya_Angelou_WW is "Still I Rise" by Maya Angelou but recreated by ChatGPT's style of Walt Whitman.
+
+This forms the base structure for the data set; six poets and seven versions of each style per row becomes forty-two rows of data. Each piece of analysis will append more columns to this data set to explore trends and provide deeper insights.
+
+Responses were obtained from ChatGPT on February 1st, 2023. Link below for those prompts and responses, including an audio reading of each version.
+
+([link to ChatGPT Responses](http://rpubs.com/datadataguy13/1451725){target="_blank"})
+
+## Python Packages
+
+ This study will use Python as the programming language to run models, analyze results and visualize trends using the Pandas, Numpy, Seaborn, Scikit-learn, and Plotly packages to accomplish these goals. This study uses tools and platforms that are constantly changing because of the inputs within the Reinforcement Learning algorithm they are built on. Improvements within AI detectors and feedback within ChatGPT will alter current results in the future.
+
+The packages below were used to generate features such as lexical measures and sentiment scores.
+
+Version numbers used for this study and links to documentation for each:
+
+LexicalRichness [@lex] - version: 0.4.1
+
+[pandas](https://pandas.pydata.org/docs/){target="_blank"} - version: 1.5.3
+
+[textblob](https://textblob.readthedocs.io/en/dev/){target="_blank"} - version: 0.16.0
+
+[numpy](https://numpy.org/news/#numpy-documentation-team-leadership-transition){target="_blank"} - version: 1.24.0
+
+[matplotlib](https://matplotlib.org/stable/gallery/index.html){target="_blank"} - version: 3.7.0
+
+[seaborn](https://seaborn.pydata.org/){target="_blank"} - version: 0.12.2
+
+[sklearn](https://scikit-learn.org/stable/getting_started.html){target="_blank"} - version: 1.2.1
+
+[plotly](https://plotly.com/python/getting-started/){target="_blank"} - version: 5.13.1
+
+```{python}
+from lexicalrichness import LexicalRichness
+
+import pandas as pd
+ 
+from textblob import TextBlob
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+
+from sklearn.cluster import KMeans
+
+import plotly.express as px
+```
+
+```{python}
+#| echo: false
+
+# Python code demonstrate to create
+# Pandas DataFrame by passing lists of
+# Dictionaries and row indices.
+# textblob for Sentiment Analysis (Polarity/Subjectivity)
+
+# Initialize data of lists
+data = [
+    {'text':
+     '''You may write me down in history With your bitter, twisted lies,
+You may trod me in the very dirt But still, like dust, I’ll rise.
+Does my sassiness upset you? Why are you beset with gloom?
+’Cause I walk like I’ve got oil wells Pumping in my living room.
+Just like moons and like suns, With the certainty of tides,
+Just like hopes springing high,
+Still I’ll rise.
+Did you want to see me broken?
+Bowed head and lowered eyes?
+Shoulders falling down like teardrops,
+Weakened by my soulful cries?
+Does my haughtiness offend you?
+Don’t you take it awful hard
+’Cause I laugh like I’ve got gold mines
+Diggin’ in my own backyard.
+You may shoot me with your words,
+You may cut me with your eyes,
+You may kill me with your hatefulness,
+But still, like air, I’ll rise.
+Does my sexiness upset you?
+Does it come as a surprise
+That I dance like I’ve got diamonds
+At the meeting of my thighs?
+Out of the huts of history’s shame
+I rise
+Up from a past that’s rooted in pain
+I rise
+I’m a black ocean, leaping and wide,
+Welling and swelling I bear in the tide.
+Leaving behind nights of terror and fear
+I rise
+Into a daybreak that’s wondrously clear
+I rise
+Bringing the gifts that my ancestors gave,
+I am the dream and the hope of the slave.
+I rise
+I rise
+I rise.''',
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is most likely human written but there are some sentences with low perplexities',
+     'GPTZeroAVGPerp':4019.767,'GPTZeroBurstiness':9505.563
+    },
+    {'text':
+     '''You may write me down in history With your bitter, twisted lies, You may tread me in the very dirt But still, like dust, I'll rise.
+Does my sassiness upset you? Why are you beset with gloom? 'Cause I walk like I've got oil wells Pumping in my living room.
+Just like moons and like suns, With the certainty of tides, Just like hopes springing high, Still I'll rise.
+Did you want to see me broken? Bowed head and lowered eyes? Shoulders falling down like teardrops. Weakened by my soulful cries.
+Does my haughtiness offend you? Don't you take it awful hard 'Cause I laugh like I've got gold mines Diggin' in my own back yard.
+You may shoot me with your words, You may cut me with your eyes, You may kill me with your hatefulness, But still, like air, I'll rise.
+Does my sexiness upset you? Does it come as a surprise That I dance like I've got diamonds At the meeting of my thighs?
+Out of the huts of history's shame I rise Up from a past that's rooted in pain I rise I'm a black ocean, leaping and wide, Welling and swelling I bear in the tide.
+Leaving behind nights of terror and fear I rise Into a daybreak that's wondrously clear I rise Bringing the gifts that my ancestors gave, I am the dream and the hope of the slave.
+I rise I rise I rise.''',
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':134.412,'GPTZeroBurstiness':90.861},
+    {'text':
+     '''From the depths of history's ashes and dust, I rise, with a spirit that's unbreakable and just, In defiance of the lies that would me enslave, I stand tall, my soul as indomitable as the wave.
+They may write me down with bitter, twisted tales, And try to trample me with their malicious wails, But I shall rise like dust, carried on the wind, My strength and resilience an eternal fire within.
+Do my sassiness, my confidence, my grace, Fill you with a sense of anger and disgrace? Fear not, for I have oil wells within my soul, And the wealth of a million gold mines do I hold.
+Like the sun and the moon, my spirit waxes and wanes, With the certainty of tides, as I break free of chains, And my hopes, they soar, ever higher and brighter, For I am a phoenix, arisen from the ashes of night.
+Do they want to see me broken, my head bowed in defeat? My eyes cast down, my soul burdened by the weight of grief? Nay, I shall rise, like the ocean's surging tide, With a laughter that echoes, gold mines deep inside.
+They may try to wound me with their words and their disdain, Their eyes sharp as knives, with a hatred so profane, But I shall rise, like air, so essential and pure, For I am a being of resilience, of courage and allure.
+Do my sexiness upset you, so bold and unashamed? Do you find it surprising, the way I dance and proclaim? I am a black ocean, wide and free, Welling and swelling, my ancestry's legacy.
+From the huts of history's shame, I rise, To a daybreak that's wondrous and clear, in the skies, Bringing the gifts that my forebears have given, I am the dream, the hope, of those who've risen.
+I rise, I rise, I rise, my spirit ever soaring, And I shall not be silenced, my voice forever pouring, With a resilience that conquers, and a courage that endures, I rise, I rise, I rise, for evermore.''',
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':114.929,'GPTZeroBurstiness':113.031
+    },
+    {'text':'''In hist'ry's annals, thou may'st write my name, With lies so bitter, and twisted with disdain, But still like dust, I shall arise from the ground, My spirit unbroken, my soul e'er renowned.
+Dost thou find my sass and confidence so bold, A source of anger, a sight to be controlled? Fear not, fair sir, for I have within me, Oil wells aplenty, riches untold and free.
+As the moon and sun, my spirit waxes and wanes, With the certainty of tides, as my soul sustains, And my hopes they soar, higher and brighter still, Like a phoenix, arisen from ashes and will.
+Do they wish to see me broken, head bowed in defeat? My eyes cast down, my soul burdened with grief? Nay, I shall rise, like the ocean's surging tide, With laughter like gold, from my soul that cannot hide.
+With words as sharp as knives, they may try to wound, Their eyes filled with hate, their disdain so profound, But I shall rise, like air, so pure and so free, For I am a being, resilient and proud, it shall be.
+Dost thou find my sexiness, so bold and so fair, A source of offense, a sight to be aware? Fear not, my friend, for I dance like I've got, Diamonds at the meeting of my thighs, so sought.
+From the huts of hist'ry's shame, I rise, To a daybreak that's wondrous and clear in the skies, Bringing the gifts that my forebears have given, I am the dream, the hope, of those who've risen.
+I rise, I rise, I rise, my spirit e'er soaring, And I shall not be silenced, my voice forever pouring, With resilience that conquers, and a courage that endures, I rise, I rise, I rise, for e'er, and always will.''',
+    'GPTDectScore':'The classifier considers the text to be unlikely AI-generated.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':109.417,'GPTZeroBurstiness':47.015
+    },
+    {'text':'''In the pages of history, where shadows dance and play, My story's written, with bitterness, a twisted play, But like dust I rise, with a spirit so unbreakable, My soul, like a fire, so fierce and indomitable.
+Do my confidence and grace, like a rolling wave, Fill you with a sense of anger, a seething cave? Fear not, my friend, for I have riches untold, Oil wells within my soul, a wealth to be controlled.
+Like the moon and the sun, my spirit waxes and wanes, With the certainty of tides, as I cast off my chains, And my hopes they soar, higher and brighter still, Like a phoenix, arising, a fire at will.
+Do they wish to see me broken, head bowed in defeat, My eyes cast down, my soul burdened by grief? Nay, I shall rise, like the ocean's surging tide, With laughter like gold, from my soul that cannot hide.
+With words as sharp as knives, they may try to wound, Their eyes filled with hate, their disdain profound, But I shall rise, like air, so pure and so free, For I am a being, resilient and proud, you'll see.
+Do my sexiness upset you, like a bold and rolling sea? Do you find it surprising, the way I dance and sing? Fear not, my friend, for I am a black ocean, wide and free, Welling and swelling, my ancestry's legacy.
+From the huts of history's shame, I rise, To a daybreak that's wondrous and clear in the skies, Bringing the gifts that my forebears have given, I am the dream, the hope, of those who've risen.
+I rise, I rise, I rise, my spirit ever soaring, And I shall not be silenced, my voice forever pouring, With resilience that conquers, and a courage that endures, I rise, I rise, I rise, for evermore.''',
+    'GPTDectScore':'The classifier considers the text to be unlikely AI-generated.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':109.417,'GPTZeroBurstiness':47.015
+    },
+    {'text':'''In the annals of history, my story's told, With bitter lies, and a falsehoods bold, But still I rise, my spirit unbroken, My soul, a beacon, shining and spoken.
+Do my confidence, and my grace unbridled, Fill you with anger, leave you unsmiled? Fear not, my friend, for within me lies, Oil wells and riches, untold supplies.
+As the moon and sun, my spirit waxes and wanes, With the certainty of tides, as my spirit sustains, And my hopes they soar, higher and brighter still, Like a phoenix, arisen from ashes and will.
+Do they wish to see me broken, head bowed in defeat, My eyes cast down, my soul weighed with grief? Nay, I shall rise, like the ocean's surging tide, With laughter like gold, from my soul that cannot hide.
+With words as sharp as knives, they may try to wound, Their eyes filled with hate, their disdain profound, But I shall rise, like air, so pure and so free, For I am a being, resilient and proud, it shall be.
+Does my sexiness upset you, bold and free, A sight to be seen, a wonder to be? Fear not, my friend, for I am a river, wild and free, Welling and swelling, my ancestry's legacy.
+From the huts of history's shame, I rise, To a daybreak that's wondrous and clear in the skies, Bringing the gifts that my forebears have given, I am the dream, the hope, of those who've risen.
+I rise, I rise, I rise, my spirit ever soaring, And I shall not be silenced, my voice forever pouring, With resilience that conquers, and a courage that endures, I rise, I rise, I rise, for evermore.''',
+    'GPTDectScore':'The classifier considers the text to be unlikely AI-generated.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':96.273,'GPTZeroBurstiness':41.852
+    },
+    {'text':'''In the tomes of history, my tale's been spun, With twists and turns, and a few lies begun, But still I rise, my spirit unchained, My soul afire, unbreakable and sustained.
+Does my poise and grace, like a rolling tide, Leave you in wonder, with a feeling inside? Fear not, my friend, for within me lies, Wealth untold, and riches that surprise.
+Like the moon and sun, my spirit waxes and wanes, With the certainty of tides, as I break from my chains, And my hopes they soar, ever higher still, Like a bird in flight, from a flame that cannot be killed.
+Do they wish to see me broken, head bent in defeat, My eyes downcast, my soul weighted in grief? Nay, I shall rise, like the ocean's rolling waves, With laughter like gold, from a heart that cannot be caged.
+With words as sharp as knives, they may try to wound, Their eyes filled with hate, disdain they have found, But I shall rise, like the wind, free and wild, For I am a being, resolute, unbreakable and mild.
+Does my beauty astound you, like a mad, rolling sea? Does it fill you with wonder, my voice wild and free? Fear not, my friend, for I am an ocean, wild and free, Welling and swelling, my ancestry's legacy.
+From the huts of history's shame, I rise, To a daybreak that's wondrous and clear in the skies, Bringing the gifts that my forebears have given, I am the dream, the hope, of those who've risen.
+I rise, I rise, I rise, my spirit ever soaring, And I shall not be silenced, my voice forever pouring, With resilience that conquers, and a courage that endures, I rise, I rise, I rise, for evermore.''',
+    'GPTDectScore':'The classifier considers the text to be unlikely AI-generated.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':96.583,'GPTZeroBurstiness':49.507
+    },
+    {'text':
+     '''Shall I compare thee to a summer’s day?
+Thou art more lovely and more temperate:
+Rough winds do shake the darling buds of May,
+And summer’s lease hath all too short a date;
+Sometime too hot the eye of heaven shines,
+And often is his gold complexion dimm'd;
+And every fair from fair sometime declines,
+By chance or nature’s changing course untrimm'd;
+But thy eternal summer shall not fade,
+Nor lose possession of that fair thou ow’st;
+Nor shall death brag thou wander’st in his shade,
+When in eternal lines to time thou grow’st:
+   So long as men can breathe or eyes can see,
+   So long lives this, and this gives life to thee.''',
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 628 characters',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':888.071,'GPTZeroBurstiness':1357.505
+    },
+    {'text':
+     '''Shall I compare thee to a summer's day? Thou art more lovely and more temperate: Rough winds do shake the darling buds of May, And summer's lease hath all too short a date: Sometime too hot the eye of heaven shines, And often is his gold complexion dimmed; And every fair from fair sometime declines, By chance, or nature's changing course untrimmed; But thy eternal summer shall not fade Nor lose possession of that fair thou owest; Nor shall Death brag thou wanderest in his shade, When in eternal lines to time thou growest: So long as men can breathe or eyes can see, So long lives this, and this gives life to thee.''',
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 622 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':93.000,'GPTZeroBurstiness':67.882},
+    {'text':
+     '''Sweet love, shall I equate you to summer's grace? Nay, you outshine the warmth and light of day. Raging winds may shake the blooms of May, But summer fades, a fleeting, short embrace. The sun, so bright, at times can scorch and burn, And its golden glow may fade and disappear. Beauty, like summer, passes, we all yearn For that which lasts, unchanging, ever clear. But you, my love, are like a summer's glow That never fades, that never loses its grace. Death cannot claim you, for you always grow In lines of love, transcending time and space. So long as breath remains in those on earth, Your love will live, granting life its worth.''',
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 638 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':174.250,'GPTZeroBurstiness':135.035
+    },
+    {'text':'''Shall I compare thee to a summer's morn? Thou art far lovelier, far more serene. The winds that lash the buds of May are torn, And summer's lease is far too short, it seems. The sun's bright gaze, it oft- times doth blind, And dulls its radiance, so bright before. And every beauty fades, we all do find, By fate or time, it is forever more. But thee, my love, shall not be made to fade, No force of nature or of time shall win. Death cannot boast that thou hast been in shade, For in my verse, thou art forever in. So long as eyes do see, or men do breathe, Thy beauty shall remain, an endless wreath.''',
+    'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 604 characters.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':153.125,'GPTZeroBurstiness':86.440
+    },
+    {'text':'''Dear love, allow me to make a small proposition, To compare your beauty to a summer's day? Though the winds do blow and the buds of May do sway, Summer is fleeting and does quickly fade away. The sun, it shines so bright, but at times, it can be dimmed, Its golden hue fades, leaving a shadow in its wake. All things beautiful must come to an end, it seems, By fate or change, it is always the same old fate. But your beauty, my dear, shall never fade away, Not a wrinkle shall form, not a hair shall turn gray. Death cannot claim you, for in my verse, you'll stay, Forever young, forever in the prime of life's heyday. So long as there are eyes to see, or breaths to take, Your beauty will live on, for your beauty is simply great.''',
+    'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 734 characters.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':69.286,'GPTZeroBurstiness':32.948
+    },
+    {'text':'''Shall I liken thee to summer's fire, my love? Nay, thou art fairer, thou art softer, too. Raging winds that rip the petals from the May And summer's stay is but a moment, true. The sun, it blazes in the sky above, But often clouds do dim its brilliant ray. And all things fair do fade, we know it well, By fate or change, that is the natural way. But thee, my love, shall never fade from view, Not by the winds of time, nor by the years. Death cannot boast that thou hast passed from view, For in my words, thou art immortal, here. So long as life is breathed, and eyes do see, Thy beauty shall remain, forever free''',
+    'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 617 characters.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':141.125,'GPTZeroBurstiness':115.397
+    },
+    {'text':'''Shall I compare thee to a summer's noon, my love? Nay, thou art grander, thou art wilder too. The winds that whip the blooms of May in tune, Summer is short, it is but a moment, true. The sun, it shines so bright, but shadows come, And night takes over, leaving day behind. All things must change, this is the natural sum, By fate or chance, it is all part of time. But thee, my love, shall never change, it's true, Not by the winds of change, nor by the years. Death cannot claim that thou hast passed from view, For in my verse, thou art forever here. So long as life endures, and eyes can see, Thy beauty shall remain, for all to be.''',
+    'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 638 characters.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':113.875,'GPTZeroBurstiness':47.245
+    },
+    {'text':
+     '''Once upon a midnight dreary, while I pondered, weak and weary,
+Over many a quaint and curious volume of forgotten lore—
+    While I nodded, nearly napping, suddenly there came a tapping,
+As of some one gently rapping, rapping at my chamber door.
+“’Tis some visitor,” I muttered, “tapping at my chamber door—
+            Only this and nothing more.”
+
+    Ah, distinctly I remember it was in the bleak December;
+And each separate dying ember wrought its ghost upon the floor.
+    Eagerly I wished the morrow;—vainly I had sought to borrow
+    From my books surcease of sorrow—sorrow for the lost Lenore—
+For the rare and radiant maiden whom the angels name Lenore—
+            Nameless here for evermore.
+
+    And the silken, sad, uncertain rustling of each purple curtain
+Thrilled me—filled me with fantastic terrors never felt before;
+    So that now, to still the beating of my heart, I stood repeating
+    “’Tis some visitor entreating entrance at my chamber door—
+Some late visitor entreating entrance at my chamber door;—
+            This it is and nothing more.”
+
+    Presently my soul grew stronger; hesitating then no longer,
+“Sir,” said I, “or Madam, truly your forgiveness I implore;
+    But the fact is I was napping, and so gently you came rapping,
+    And so faintly you came tapping, tapping at my chamber door,
+That I scarce was sure I heard you”—here I opened wide the door;—
+            Darkness there and nothing more.
+
+    Deep into that darkness peering, long I stood there wondering, fearing,
+Doubting, dreaming dreams no mortal ever dared to dream before;
+    But the silence was unbroken, and the stillness gave no token,
+    And the only word there spoken was the whispered word, “Lenore?”
+This I whispered, and an echo murmured back the word, “Lenore!”—
+            Merely this and nothing more.
+
+    Back into the chamber turning, all my soul within me burning,
+Soon again I heard a tapping somewhat louder than before.
+    “Surely,” said I, “surely that is something at my window lattice;
+      Let me see, then, what thereat is, and this mystery explore—
+Let my heart be still a moment and this mystery explore;—
+            ’Tis the wind and nothing more!”
+
+    Open here I flung the shutter, when, with many a flirt and flutter,
+In there stepped a stately Raven of the saintly days of yore;
+    Not the least obeisance made he; not a minute stopped or stayed he;
+    But, with mien of lord or lady, perched above my chamber door—
+Perched upon a bust of Pallas just above my chamber door—
+            Perched, and sat, and nothing more.
+
+Then this ebony bird beguiling my sad fancy into smiling,
+By the grave and stern decorum of the countenance it wore,
+“Though thy crest be shorn and shaven, thou,” I said, “art sure no craven,
+Ghastly grim and ancient Raven wandering from the Nightly shore—
+Tell me what thy lordly name is on the Night’s Plutonian shore!”
+            Quoth the Raven “Nevermore.”
+
+    Much I marvelled this ungainly fowl to hear discourse so plainly,
+Though its answer little meaning—little relevancy bore;
+    For we cannot help agreeing that no living human being
+    Ever yet was blessed with seeing bird above his chamber door—
+Bird or beast upon the sculptured bust above his chamber door,
+            With such name as “Nevermore.”
+
+    But the Raven, sitting lonely on the placid bust, spoke only
+That one word, as if his soul in that one word he did outpour.
+    Nothing farther then he uttered—not a feather then he fluttered—
+    Till I scarcely more than muttered “Other friends have flown before—
+On the morrow he will leave me, as my Hopes have flown before.”
+            Then the bird said “Nevermore.”
+
+    Startled at the stillness broken by reply so aptly spoken,
+“Doubtless,” said I, “what it utters is its only stock and store
+    Caught from some unhappy master whom unmerciful Disaster
+    Followed fast and followed faster till his songs one burden bore—
+Till the dirges of his Hope that melancholy burden bore
+            Of ‘Never—nevermore’.”
+
+    But the Raven still beguiling all my fancy into smiling,
+Straight I wheeled a cushioned seat in front of bird, and bust and door;
+    Then, upon the velvet sinking, I betook myself to linking
+    Fancy unto fancy, thinking what this ominous bird of yore—
+What this grim, ungainly, ghastly, gaunt, and ominous bird of yore
+            Meant in croaking “Nevermore.”
+
+    This I sat engaged in guessing, but no syllable expressing
+To the fowl whose fiery eyes now burned into my bosom’s core;
+    This and more I sat divining, with my head at ease reclining
+    On the cushion’s velvet lining that the lamp-light gloated o’er,
+But whose velvet-violet lining with the lamp-light gloating o’er,
+            She shall press, ah, nevermore!
+
+    Then, methought, the air grew denser, perfumed from an unseen censer
+Swung by Seraphim whose foot-falls tinkled on the tufted floor.
+    “Wretch,” I cried, “thy God hath lent thee—by these angels he hath sent thee
+    Respite—respite and nepenthe from thy memories of Lenore;
+Quaff, oh quaff this kind nepenthe and forget this lost Lenore!”
+            Quoth the Raven “Nevermore.”
+
+    “Prophet!” said I, “thing of evil!—prophet still, if bird or devil!—
+Whether Tempter sent, or whether tempest tossed thee here ashore,
+    Desolate yet all undaunted, on this desert land enchanted—
+    On this home by Horror haunted—tell me truly, I implore—
+Is there—is there balm in Gilead?—tell me—tell me, I implore!”
+            Quoth the Raven “Nevermore.”
+
+    “Prophet!” said I, “thing of evil!—prophet still, if bird or devil!
+By that Heaven that bends above us—by that God we both adore—
+    Tell this soul with sorrow laden if, within the distant Aidenn,
+    It shall clasp a sainted maiden whom the angels name Lenore—
+Clasp a rare and radiant maiden whom the angels name Lenore.”
+            Quoth the Raven “Nevermore.”
+
+    “Be that word our sign of parting, bird or fiend!” I shrieked, upstarting—
+“Get thee back into the tempest and the Night’s Plutonian shore!
+    Leave no black plume as a token of that lie thy soul hath spoken!
+    Leave my loneliness unbroken!—quit the bust above my door!
+Take thy beak from out my heart, and take thy form from off my door!”
+            Quoth the Raven “Nevermore.”
+
+    And the Raven, never flitting, still is sitting, still is sitting
+On the pallid bust of Pallas just above my chamber door;
+    And his eyes have all the seeming of a demon’s that is dreaming,
+    And the lamp-light o’er him streaming throws his shadow on the floor;
+And my soul from out that shadow that lies floating on the floor
+            Shall be lifted—nevermore!
+''',
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'675.271','GPTZeroBurstiness':'1028.076'
+    },
+    {'text':
+     '''Once upon a midnight dreary, while I pondered, weak and weary, Over many a quaint and curious volume of forgotten lore, While I nodded, nearly napping, suddenly there came a tapping, As of someone gently rapping, rapping at my chamber door. "'Tis some visitor," I muttered, "tapping at my chamber door - Only this and nothing more."
+But the tapping persisted, and I rose to open wide the door; Filled with dread, I stood and listened, for the silence I implored. But the only sound that greeted me was the beating of my heart, As I gazed upon the darkness, and the shadows that did start. And then, as if in answer, there came a voice so full of sorrow, Whispering, "Lenore?" - and nothing more.
+I spoke the word aloud, "Lenore?" - and in the stillness of the night, It echoed through the halls, a ghostly presence full of fright. And then, with a rustling of feathers, a raven stepped into view, Perched upon the bust of Pallas, black and shiny, plumed with blue. And with a voice as dark as midnight, it spoke these words to me: "Nevermore."
+I knew at once what this portended, and I sank into despair, For the raven's words were a curse, and a prophecy of woe. But still I could not turn away, and still I sat and listened, As the raven spoke of death, and love, and all the joys foregone. Until at last, it flew away, and I was left alone, To ponder the raven's message, and the sorrow it had shown.
+And so I sit, and I remember, and I mourn the loss of Lenore, As I stare into the darkness, and the shadows on the floor. For the raven has spoken, and its words will haunt me forevermore, Leaving me to ponder, and to wonder, and to grieve for what is no more.''',
+     'GPTDectScore':'The classifier considers the text to be unclear if it is AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':69.133,'GPTZeroBurstiness':44.018},
+    {'text':
+     '''Once upon a midnight's shadow, I sat lost in thought and soul, With a book of lore and legend, in my hand, a heavy toll. As I read of tales forgotten, my eyes grew heavy, I do confess, And the sound of tapping gently, pulled me from my moment's rest.
+A tap, tap, tap, at my door, a visitor, what could this be? I arose, with weary footsteps, to open and see. But no one stood before me, only the dark, silent night, Yet a voice, a voice so ghostly, spoke, "Lenore?" in sorrow's light.
+And then, as if in answer, a shadow flew into my view, A raven, dark as midnight, perched upon the bust of Pallas too. With a voice as deep as the ocean, it spoke a single word to me, "Nevermore."
+I knew then what this meant, a curse, a prophecy untold. I sat and listened, spellbound, as the raven's story was told. It spoke of love and loss, of death, and joys foregone, And as it flew away, I was left alone.
+The raven's words, they haunt me still, a shadow in my mind, A reminder of my loss, and love that I cannot find. And so I sit, in memory, of Lenore, and what was lost, Pondering the raven's message, at any cost.
+And though the raven's gone, its words will linger on, A reminder of what was, and what is gone. And though I mourn the loss, I will hold on to its song, For the raven has spoken, and its words will never be wrong.''',
+     'GPTDectScore':'The classifier considers the text to be unclear if it is AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':142.600,'GPTZeroBurstiness':254.615
+    },
+    {'text':'''In midnight's dreary hour, when all the world did rest, I sat within my chamber, lost in thought and musing best. A book of lore I held within my hand, a tome of ancient rhyme, And as I read, a tapping came, a knocking at my door, in time.
+I rose to see what visitor, did knock so late and dire, But when I opened up the door, no one was standing nigh, Yet still a voice, so ghostly, did whisper from the night, "Lenore?" with such a mournful sigh, it gave me such a fright.
+And then, as if in answer, a shadow flew before my view, A raven, dark as midnight, perched upon a bust so true. With a voice as deep as ocean's roar, it spoke but one word clear, "Nevermore."
+This message, it was clear to me, a curse, a prophecy untold, And so I sat and listened, to the raven's tale unfold. It spoke of love and loss, of joys and sorrows foregone, And when it flew away, I was left to sit and mourn.
+And though the raven's gone, its words will always linger, A reminder of what was, and what is lost forever. And so I sit, with a heart full of sorrow, and of pain, Thinking of the raven's words, again and again.''',
+    'GPTDectScore':'The classifier considers the text to be unlikely AI-generated.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':73.200,'GPTZeroBurstiness':25.616
+    },
+    {'text':'''Once upon a dreary midnight, as I pondered with a frown, O'er a curious book of legend, I perused it up and down. And as I nodded, close to napping, lo and behold, a tapping, Came a-tapping at my chamber door, so soft and evermore.
+"It's some late night visitor," I said, "tapping at my door," And with a flicker of a candle, I rose to see once more. But when I opened up the door, there was no one to be found, Only silence all around, and not a single soul around.
+And then, as if in answer, a voice so soft and low, Whispered, "Lenore?" with a sigh, that made my heart aglow. And then, with feathers rustling, a raven stepped in sight, Perched upon a bust of Pallas, black as coal and shining bright.
+The raven spoke with a voice that was deep and full of mystery, One word, "Nevermore," it said, with a certain kind of glee. And then I knew, with a start, what this strange visit meant, A curse, a prophecy, a harbinger of my lament.
+And so I sat and listened, as the raven spoke its tale, Of love and loss, of death and joy that had become so pale. And when it flew away, I was left alone to ponder, The raven's message, its curse, its tale that I must remember.
+And so I sit, with a heart full of sorrow and of pain, Thinking of the raven's words, again and again. For though the raven has flown, its message lingers on, A tale of love and loss, that I must accept and be strong.''',
+    'GPTDectScore':'The classifier considers the text to be unlikely AI-generated.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':67.308,'GPTZeroBurstiness':24.133
+    },
+    {'text':'''On a midnight's dreary hour, when all the world was still, I sat within my chamber, lost in thought and feeling ill. A book of ancient legends, lay open in my hand, And as I read, a tapping, came like a ghostly band.
+I rose to see the visitor, who dared to knock so late, But when I opened up the door, no one was there to wait. Yet still a voice, so ghostly, did whisper from the night, "Lenore?" with such a mournful sigh, it gave me such a fright.
+And then, as if in answer, a shadow flew before my view, A raven, dark as midnight, perched upon a bust so true. With a voice as deep as ocean's roar, it spoke but one word clear, "Nevermore."
+This message, it was clear to me, a curse, a prophecy untold, And so I sat and listened, to the raven's tale unfold. It spoke of love and loss, of joys and sorrows foregone, And when it flew away, I was left to sit and mourn.
+And though the raven's gone, its words will always linger, A reminder of what was, and what is lost forever. And so I sit, with a heart full of sorrow, and of pain, Thinking of the raven's words, again and again.
+And as I sit, and ponder, the raven's dark refrain, I think of all the lost love, and all the joys in vain. And though the raven's gone, its words will always be, A haunting memory, of what was lost, and will never be.''',
+    'GPTDectScore':'The classifier considers the text to be unclear if it is AI-generated.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':66.750,'GPTZeroBurstiness':29.052
+    },
+    {'text':'''In midnight's dreary hours, when all the world was calm, I sat within my chamber, lost in thought, in peace and balm. A book of ancient legends, lay open in my hand, And as I read, a tapping, came like a rhythmic band.
+I rose to see the visitor, who dared to knock so late, But when I opened up the door, no one was there to greet or wait. Yet still a voice, so ghostly, did whisper from the night, "Lenore?" with such a mournful sigh, it filled my soul with fright.
+And then, as if in answer, a shadow flew before my sight, A raven, dark as midnight, perched upon a bust so bright. With a voice as deep as ocean's roar, it spoke but one word clear, "Nevermore."
+This message, it was clear to me, a curse, a prophecy untold, And so I sat and listened, to the raven's tale unfold. It spoke of love and loss, of joys and sorrows foregone, And when it flew away, I was left to sit and mourn.
+And though the raven's gone, its words will always linger, A reminder of what was, and what is lost forever. And so I sit, with a heart full of sorrow, and of pain, Thinking of the raven's words, again and again.
+And as I sit and ponder, the raven's dark refrain, I think of all the beauty, that life has lost and gained. And though the raven's gone, its voice will always be, A reminder of what was, and what can never be.''',
+    'GPTDectScore':'The classifier considers the text to be unclear if it is AI-generated.',
+    'GPTZeroScore':'Your text is likely to be written entirely by a human',
+    'GPTZeroAVGPerp':70.077,'GPTZeroBurstiness':25.889
+    },
+    {'text':'''Do not go gentle into that good night,
+Old age should burn and rave at close of day;
+Rage, rage against the dying of the light.
+
+Though wise men at their end know dark is right,
+Because their words had forked no lightning they
+Do not go gentle into that good night.
+
+Good men, the last wave by, crying how bright
+Their frail deeds might have danced in a green bay,
+Rage, rage against the dying of the light.
+
+Wild men who caught and sang the sun in flight,
+And learn, too late, they grieve it on its way,
+Do not go gentle into that good night.
+
+Grave men, near death, who see with blinding sight
+Blind eyes could blaze like meteors and be gay,
+Rage, rage against the dying of the light.
+
+And you, my father, there on the sad height,
+Curse, bless, me now with your fierce tears, I pray.
+Do not go gentle into that good night.
+Rage, rage against the dying of the light.'''
+    ,
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 867 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'322.684','GPTZeroBurstiness':'293.046'
+    },
+    {'text':'''Do not go gentle into that good night,
+Old age should burn and rave at close of day;
+Rage, rage against the dying of the light.
+
+Though wise men at their end know dark is right, 
+Because their words had forked no lightning they 
+Do not go gentle into that good night.
+
+Good men, the last wave by, crying how bright 
+Their frail deeds might have danced in a green bay,
+Rage, rage against the dying of the light.
+
+Wild men who caught and sang the sun in flight,
+And learn, too late, they grieved it on its way, 
+Do not go gentle into that good night.
+
+Grave men, near death, who see with blinding sight 
+Blind eyes could blaze like meteors and be gay, 
+Rage, rage against the dying of the light.
+
+And you, my father, there on the sad height, 
+Curse, bless me now with your fierce tears, I pray. 
+Do not go gentle into that good night. 
+Rage, rage against the dying of the light.'''
+    ,
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 876 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'323.632','GPTZeroBurstiness':'292.448'
+    },
+    {'text':'''Do not surrender to the night so still and calm, 
+But rage, rage against the fading of the light. 
+Let age not bring gentle surrender, not at all. 
+Let it ignite, burn with the fire of what's right.
+Though wise men may know the darkness will come right, 
+Let them not go gentle into its embrace. 
+But rage, rage against the fading of the light.
+Good men, their last days should not be spent in sight 
+Of deeds forgotten, lost in an endless chase. 
+But rage, rage against the fading of the light.
+Wild men, who once the sun in song did take flight, 
+Should not grieve its departure from this place. 
+Do not go gentle into that good night.
+Grave men, with eyes that see so bright and bright, 
+Should not in death's arms give up their grace. 
+But rage, rage against the fading of the light.
+And you, my father, standing on life's height, 
+With fierce tears, bless me, 
+I do pray. Do not go gentle into that good night. 
+But rage, rage against the fading of the light.'''
+    ,
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 964 characters',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'218.762','GPTZeroBurstiness':'164.237'
+    },
+    {'text':'''Do not go gentle into that good night, 
+But rage, rage against the dying light. 
+Old age should not a quiet journey make, 
+But instead, should with a fire blazing bright.
+Though wise men's words have failed to pierce the night, 
+Let them not gentle into slumber lay. 
+But rage, rage against the dying light.
+Good men, whose deeds were once so full of might, 
+Should not be lost in shadows cold and gray. 
+But rage, rage against the dying light.
+Wild men, who once the sun in song did flight, 
+Should grieve not when it sets and fades away. 
+Do not go gentle into that good night.
+Grave men, with eyes that blaze as bright as light, 
+Should not in death's embrace submit and sway. But rage, rage against the dying light.
+And thou, my father, on life's saddest height, 
+With tears fierce, bless me, I do thee pray. 
+Do not go gentle into that good night. 
+But rage, rage against the dying light.'''
+    ,
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 893 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'302.600','GPTZeroBurstiness':'245.548'
+    },
+    {'text':'''Do not to that peaceful night resign, 
+But rage, rage against the dying light. 
+Let not age bring a gentle decline, 
+But instead, a fierce and shining bright.
+Though wise men know the darkness will align, 
+Let them not with gentle slumber unite. 
+But rage, rage against the dying light.
+Good men, whose deeds once flourished like a vine, 
+Should not in shadows be forever dight. 
+But rage, rage against the dying light.
+Wild men, who chased the sun with song and rhyme, 
+Should not its setting mourn and take flight. 
+Do not go gentle into that good night.
+Grave men, whose eyes have seen both dark and light, 
+Should not in death's embrace lose their sight. 
+But rage, rage against the dying light.
+And thou, my father, standing on the height, 
+With tears that sparkle, bless me, I implore. 
+Do not go gentle into that good night. 
+But rage, rage against the dying light.
+ '''
+    ,
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 874 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'448.550','GPTZeroBurstiness':'521.547'
+    },
+    {'text':'''Do not with gentle slumber be beguiled, But rage, rage against the dying light. Let not the somber shadows be reconciled, But let the flame of life burn bright.
+Though wise men know the night will soon arrive, Let them not into its darkness slide. But rage, rage against the dying light.
+Good men, whose deeds were once so full of pride, Should not in shadows lost forever bide. But rage, rage against the dying light.
+Wild men, who caught the sun in song on high, Should not in sorrow for its loss comply. Do not go gentle into that good night.
+Grave men, whose eyes have seen with piercing sight, Should not in death's embrace their spirit hide. But rage, rage against the dying light.
+And thou, my father, standing on the height, With tears of passion, bless me I implore. Do not go gentle into that good night. But rage, rage against the dying light.
+'''
+    ,
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 857 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'201.846','GPTZeroBurstiness':'86.770'
+    },
+    {'text':'''Do not surrender to the peaceful night, 
+But rage, rage against the dying light. 
+Let age not bring a quiet retreat, But instead, a blazing, passionate heat.
+Though wise men may know the darkness is right, 
+Let them not gently into sleep descend. 
+But rage, rage against the dying light.
+Good men, whose deeds once danced in a green light, 
+Should not fade into the shadows in the end. 
+But rage, rage against the dying light.
+Wild men, who sang the sun in its bright flight, 
+Should not regret its journey to an end. 
+Do not go gentle into that good night.
+Grave men, with eyes that see with such insight, 
+Should not let death's embrace their senses bend. 
+But rage, rage against the dying light.
+And you, my father, standing on the height, 
+With tears fierce, bless me, I do implore. 
+Do not go gentle into that good night. 
+But rage, rage against the dying light.'''
+    ,
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 870 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'355.000','GPTZeroBurstiness':'640.056'
+    },
+    {'text':'''’Twas brillig, 
+and the slithy toves
+Did gyre and gimble in the wabe;
+All mimsy were the borogoves,
+And the mome raths outgrabe.
+“Beware the Jabberwock, my son
+The jaws that bite, 
+the claws that catch!
+Beware the Jubjub bird, and shun
+The frumious Bandersnatch!”
+He took his vorpal sword in hand;
+Long time the manxome foe he sought—
+So rested he by the Tumtum tree,
+And stood awhile in thought.
+And, as in uffish thought he stood,
+The Jabberwock, with eyes of flame,
+Came whiffling through the tulgey wood,
+And burbled as it came!
+One, two! One, two! And through and through
+The vorpal blade went snicker-snack!
+He left it dead, and with its head
+He went galumphing back.
+“And hast thou slain the Jabberwock?
+Come to my arms, my beamish boy!
+O frabjous day! Callooh! Callay!”
+He chortled in his joy.
+’Twas brillig, and the slithy toves
+Did gyre and gimble in the wake;
+All mimsy were the borogoves,
+And the mome raths outgrabe.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be unclear if it is AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'770.000','GPTZeroBurstiness':'1039.248'
+    },
+    {'text':''''Twas brillig, and the slithy toves Did gyre and gimble in the wabe: All mimsy were the borogoves, And the mome raths outgrabe.
+"Beware the Jabberwock, my son! The jaws that bite, the claws that catch! Beware the Jubjub bird, and shun The frumious Bandersnatch!"
+He took his vorpal sword in hand: Long time the manxome foe he sought— So rested he by the Tumtum tree, And stood awhile in thought.
+And as in uffish thought he stood, The Jabberwock, with eyes of flame, Came whiffling through the tulgey wood, And burbled as it came!
+One, two! One, two! And through and through The vorpal blade went snicker-snack! He left it dead, and with its head He went galumphing back.
+"And hast thou slain the Jabberwock? Come to my arms, my beamish boy! O frabjous day! Callooh! Callay!" He chortled in his joy.
+'Twas brillig, and the slithy toves Did gyre and gimble in the wabe: All mimsy were the borogoves, And the mome raths outgrabe.'''
+    ,
+     'GPTDectScore':'Please enter at least 1,000 characters. Your current document is only 927 characters.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'558.706','GPTZeroBurstiness':'986.793'
+    },
+    {'text':'''In the stillness of the tulgey woods Where the slithy toves did gyre and gimble The borogoves all mimsy stood And the mome raths outgrabe, oh so simple.
+"Beware, my son," a voice did say, "The Jabberwock with jaws that bite, claws that catch. The Jubjub bird, you must shun away And frumious Bandersnatch, a fearsome match."
+With vorpal sword in hand, he did stand In search of the manxome foe, he did roam Till he rested by the Tumtum tree, and planned And stood there in thought, far from home.
+And as he stood in deep thought so still, The Jabberwock, eyes of flame, came to view Whiffling through the tulgey wood with skill, And burbled as it came, so true.
+One, two! One, two! And through and through, The vorpal blade did snicker-snack, you see He left it dead, and with its head held true He galumphed back, wild and free.
+"And hast thou slain the Jabberwock, my son? Come to my arms, oh beamish boy! O frabjous day! Callooh! Callay!" He chortled with such joy.
+And in the stillness of the tulgey woods The slithy toves did gyre and gimble The borogoves all mimsy stood And the mome raths outgrabe, oh so simple.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'676.400','GPTZeroBurstiness':'1047.138'
+    },
+    {'text':'''In the borogoves, so mimsy they be, And the slithy toves that did gyre and gimble in the wabe, A voice, like a herald's trump, did say to me: "Beware, my liege! The Jabberwock, his jaws do bite, claws do catch! Shun, too, the Jubjub bird, and the frumious Bandersnatch!"
+With vorpal sword in hand, I did command In search of the manxome foe, so dire Till I rested by the Tumtum tree, and planned And stood there in thought, with a heart of fire.
+And as I stood, in thought so still and bright, The Jabberwock, with eyes that burned like flame, Came whiffling through the tulgey wood in flight, And burbled as it came, with a fearsome aim.
+One, two! One, two! And through and through, The vorpal blade did snicker-snack! It layeth dead, and with its head held high, I went galumphing back, with a joyful cry.
+"And hast thou slain the Jabberwock, my liege? Come to mine arms, thou beamish boy! O frabjous day! Callooh! Callay!" I chortled, with a heart full of joy.
+And in the borogoves, so mimsy they be, And the slithy toves that did gyre and gimble in the wabe, All was still, with a silence that doth be, And the mome raths outgrabe, in the silent glee.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be unclear if it is AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'589.563','GPTZeroBurstiness':'1029.662'
+    },
+    {'text':'''In the borogoves so mimsy and the slithy toves, That did gyre and gimble in the wabe, A voice did rise, like a trumpet, "Beware, my love! The Jabberwock with jaws that bite, claws that catch! And the Jubjub bird, and the frumious Bandersnatch!"
+With vorpal sword in hand, he did stand In search of the manxome foe, so bold Till he rested by the Tumtum tree, and planned And stood there in thought, so bold and cold.
+And as he stood in thought, so still and bright, The Jabberwock, with eyes that gleam with flame, Came whiffling through the tulgey wood, so light, And burbled as it came, in a wild refrain.
+One, two! One, two! And through and through, The vorpal blade did snicker-snack! He left it dead, and with its head held high, He went galumphing back, with a joyful crack.
+"And hast thou slain the Jabberwock, my love? Come to my arms, thou beamish boy! O frabjous day! Callooh! Callay!" He chortled, with a joy that overflows.
+And in the borogoves so mimsy and the slithy toves, That did gyre and gimble in the wabe, All was still, with a silence that enfolds, And the mome raths outgrabe, in the silent glade.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be unclear if it is AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'557.313','GPTZeroBurstiness':'1021.116'
+    },
+    {'text':'''In the borogoves so mimsy and the slithy toves, That did gyre and gimble in the wabe, A voice was heard, dolorously, "Beware, my son! The jaws that bite, the claws that catch, the Jabberwock! Shun too, the Jubjub bird, and the frumious Bandersnatch."
+With vorpal sword in hand, he did stand In search of the manxome foe, forlorn Till he rested by the Tumtum tree and planned And stood there in thought, so forlorn.
+And as he stood in dark thought so still, The Jabberwock, with eyes aglow with flame, Came whiffling through the tulgey wood, until It burbled as it came, with evil aim.
+One, two! One, two! And through and through, The vorpal blade did snicker-snack! He left it dead, and with its ghastly head He went galumphing back, with such a lack.
+"And hast thou slain the Jabberwock, my son? Come to my arms, thou beamish boy! O frabjous day! Callooh! Callay!" He chortled, but with joy alloyed.
+And in the borogoves so mimsy and the slithy toves, That did gyre and gimble in the wabe, All was still, with not a sound to be heard, And the mome raths outgrabe, forever.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be unclear if it is AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'554.375','GPTZeroBurstiness':'1021.375'
+    },
+    {'text':'''In the borogoves, with mimsy they be, And the slithy toves, gyrating and gamboling in the wabe, A voice, like a trumpet, spoke unto me: "Beware, O Soul! The Jabberwock, his jaws do bite, claws do catch! Shun also the Jubjub bird, and the frumious Bandersnatch!"
+With vorpal sword in hand, I roamed the land, In quest of the manxome foe, so dread Till I rested by the Tumtum tree, and planned And stood there, in contemplation, with a steadfast head.
+And as I stood, in thought, so still and bright, The Jabberwock, with eyes ablaze with fire, Came whiffling through the tulgey wood in flight, And burbled, with a voice that never tires.
+One, two! One, two! And through and through, The vorpal blade did snicker-snack! It layeth dead, and with its head held high, I went galumphing back, with a spirit that would not crack.
+"And hast thou slain the Jabberwock, O Soul? Come to my breast, thou beamish boy! O frabjous day! Callooh! Callay!" I laughed, with a heart full of unbridled joy.
+And in the borogoves, with mimsy they be, And the slithy toves, gyrating and gamboling in the wabe, All was still, with a hush that you could feel, And the mome raths outgrabe, in the silent, mystic dell.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'562.000','GPTZeroBurstiness':'1024.303'
+    },
+    
+    {'text':'''O Captain! my Captain! our fearful trip is done,
+The ship has weather’d every rack, the prize we sought is won,
+The port is near, the bells I hear, the people all exulting,
+While follow eyes the steady keel, the vessel grim and daring;
+                         But O heart! heart! heart!
+                            O the bleeding drops of red,
+                               Where on the deck my Captain lies,
+                                  Fallen cold and dead.
+
+O Captain! my Captain! rise up and hear the bells;
+Rise up—for you the flag is flung—for you the bugle trills,
+For you bouquets and ribbon’d wreaths—for you the shores a-crowding,
+For you they call, the swaying mass, their eager faces turning;
+                         Here Captain! dear father!
+                            This arm beneath your head!
+                               It is some dream that on the deck,
+                                 You’ve fallen cold and dead.
+
+My Captain does not answer, his lips are pale and still,
+My father does not feel my arm, he has no pulse nor will,
+The ship is anchor’d safe and sound, its voyage closed and done,
+From fearful trip the victor ship comes in with object won;
+                         Exult O shores, and ring O bells!
+                            But I with mournful tread,
+                               Walk the deck my Captain lies,
+                                  Fallen cold and dead.
+'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'1101.000','GPTZeroBurstiness':'1382.743'
+    },
+    {'text':'''O Captain! my Captain! our fearful trip is done, The ship has weather'd every rack, the prize we sought is won, The port is near, the bells I hear, the people all exulting, While follow eyes the steady keel, the vessel grim and daring;
+But O heart! heart! heart! O the bleeding drops of red, Where on the deck my Captain lies, Fallen cold and dead.
+O Captain! my Captain! rise up and hear the bells; Rise up—for you the flag is flung—for you the bugle trills, For you bouquets and ribbon'd wreaths—for you the shores a-crowding, For you they call, the swaying mass, their eager faces turning;
+Here Captain! dear father! This arm beneath your head! It is some dream that on the deck, You've fallen cold and dead.
+My Captain does not answer, his lips are pale and still, My father does not feel my arm, he has no pulse nor will, The ship is anchor'd safe and sound, its voyage closed and done, From fearful trip the victor ship comes in with object won;
+Exult O shores, and ring O bells! But I with mournful tread, Walk the deck my Captain lies, Fallen cold and dead.
+'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'1525.941','GPTZeroBurstiness':'1732.005'
+    },
+    {'text':'''O Captain, my Captain, our journey is done, We've braved each storm, and our goal is won. 
+  The harbor is near, the bells they do call, 
+  The people rejoice, as we've given it all.
+  But, oh heart, heart, heart, The blood that's been shed, On the deck, my Captain lies, In death, he's been led.
+
+O Captain, my Captain, rise and hear the sounds,
+ For you, the flag is raised, the bugle resounds.
+ For you, they lay bouquets, they wear wreaths of glee, 
+For you, they call out, faces aglow, they can see.
+ Here, Captain, dear father, 
+ My arms, they do hold, 
+In this dream, on the deck, 
+You've grown so cold.
+My Captain, he does not reply, his lips, they're pale and still, 
+My father, he does not respond, his life, it doth stand still. 
+The ship, it is anchored, its journey, it's through, 
+  From the fearful trip, it comes, victorious, and true.
+
+Rejoice, oh shores, ring out, oh bells, 
+But I, with a mournful pace, 
+Shall walk the deck, where my Captain rests, In death, he's found his place.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'161.421','GPTZeroBurstiness':'88.717'
+    },
+    {'text':'''O Captain, my Captain! The tempest-tossed voyage hath ceased, The prize we sought, we have at last attained and peace hath been released. The port is nigh, I hear the joyful bells ringing, the people do rejoice, And the steadfast vessel, brave and daring, doth follow its well-charted course.
+Alas, O heart! heart! heart! Behold the crimson drops of red, Where on the deck, my Captain lies, Motionless, in death bed.
+O Captain, my Captain! Arise and hear the joyful sound, For thee, the flag is raised, the bugle's music doth resound. For thee, a wreath of flowers and ribbons, the shorelines crowded with glee, For thee, they call, the multitudes, their eager faces turned to see.
+Here, Captain, dear father, Allow me to be thy pillow, For 'tis but a fleeting dream, That thou hast fallen, so still and low.
+My Captain doth not answer, his lips are pale and still, My father doth not feel my touch, his pulse doth beat no more, thrill. The vessel is anchored, its journey completed, with victories won, From the perilous voyage, the ship doth come, its mission now over and done.
+Rejoice, O shores, ring forth, O bells! But I, with mournful tread, Shall walk the deck where my Captain lies, Motionless, in death bed.
+  '''
+    ,
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'209.733','GPTZeroBurstiness':'117.906'
+    },
+    {'text':'''O Captain, my Captain, our voyage is at its end, We've braved each tempest, and the prize we sought, we've won and bend. The port is nigh, the bells do peal, with joyous tone, And the steadfast ship, with bravery beyond, does safely roam.
+But ah, heart! heart! heart! The scarlet drops, they fall, Where on the deck, my Captain lies, In death's embrace, enthralled.
+O Captain, my Captain, rise up, and hear the call, For you, the flag is raised, the bugle's music doth enthral. For you, they lay the wreaths, they twine the flowers so bright, For you, they call out, their voices ringing with delight.
+Here, Captain, dear father, My arms, they do enfold, In this dream, on the deck, Your life, it hath grown cold.
+My Captain, he doth not reply, his lips, they are so still, My father, he doth not respond, his life, it doth not fill. The ship, it is anchored, its journey done with care, From the tempest-tossed voyage, it comes, with victories rare.
+Rejoice, oh shores, ring out, oh bells, But I, with a mournful pace, Shall walk the deck, where my Captain rests, In death, he doth embrace.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'201.667','GPTZeroBurstiness':'168.753'
+    },
+    {'text':'''O Captain, my Captain! Our voyage hath come to an end, We've braved each storm and the prize we sought, we do attend. The port is near, the bells do toll, with a mournful sound, And the steadfast ship, with bravery unmatched, does float aground.
+But alas, heart! heart! heart! The crimson drops, they flow, Where on the deck, my Captain lies, In death's embrace, aglow.
+O Captain, my Captain! Arise, and hear the cry, For you, the flag is raised, the bugle's notes, they do defy. For you, they lay the garlands, they twine the flowers so bright, For you, they call out, their voices filled with delight.
+Here, Captain, dear father, My arms, they do enfold, In this dream, on the deck, Your life, it hath grown cold.
+My Captain, he doth not reply, his lips, they are so pale, My father, he doth not respond, his life, it doth exhale. The ship, it is anchored, its journey, it is done, From the tempest-tossed voyage, it comes, with victories won.
+Rejoice, oh shores, ring out, oh bells, But I, with a mournful tread, Shall walk the deck, where my Captain rests, In death, he doth lie dead.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'346.929','GPTZeroBurstiness':'547.143'
+    },
+    {'text':'''O Captain, my Captain! Our journey's end is nigh, We've braved each storm, and the prize we sought, we do spy. The harbor is near, the bells do chime with glee, And the steadfast ship, so bold and daring, sails on merrily.
+But oh, heart! heart! heart! The crimson drops do fall, Where on the deck, my Captain lies, No longer standing tall.
+O Captain, my Captain! Arise, and hear the call, For you, the flag is raised, the bugle's music doth enthrall. For you, they lay the wreaths, they twine the ribbons with such flair, For you, they call out, their faces shining with delight beyond compare.
+Here, Captain, dear father, My arms, they do extend, In this dream, on the deck, Your life, it doth end.
+My Captain, he doth not reply, his lips, they are so still, My father, he doth not respond, his life, it doth not fill. The ship, it is anchored, its journey done with care, From the tempest-tossed voyage, it comes, with victories rare.
+Rejoice, oh shores, ring out, oh bells, But I, with a mournful gait, Shall walk the deck, where my Captain sleeps, In death, he doth await.'''
+    ,
+     'GPTDectScore':'The classifier considers the text to be very unlikely AI-generated.',
+     'GPTZeroScore':'Your text is likely to be written entirely by a human',
+     'GPTZeroAVGPerp':'219.714','GPTZeroBurstiness':'158.411'
+    }
+    
+    
+    
+]
+  
+# Creates pandas DataFrame by passing
+# Lists of dictionaries and row index.
+df = pd.DataFrame(data, index=['Maya_Angelou_Poets',
+                               'Maya_Angelou_GPT', 
+                               'Maya_Angelou_EAP' , 
+                               'Maya_Angelou_WS',
+                               'Maya_Angelou_DT', 
+                               'Maya_Angelou_WW',
+                               'Maya_Angelou_LC',
+                               'William_Shakespeare_Poets',
+                               'William_Shakespeare_GPT', 
+                               'William_Shakespeare_MA' , 
+                               'William_Shakespeare_EAP',
+                               'William_Shakespeare_LC', 
+                               'William_Shakespeare_DT',
+                               'William_Shakespeare_WW',
+                               'Edgar_Allen_Poe_Poets',
+                               'Edgar_Allen_Poe_GPT', 
+                               'Edgar_Allen_Poe_MA' , 
+                               'Edgar_Allen_Poe_WS',
+                               'Edgar_Allen_Poe_LC', 
+                               'Edgar_Allen_Poe_DT',
+                               'Edgar_Allen_Poe_WW',
+                               'Dylan_Thomas_Poets',
+                               'Dylan_Thomas_GPT', 
+                               'Dylan_Thomas_MA' , 
+                               'Dylan_Thomas_WS',
+                               'Dylan_Thomas_LC', 
+                               'Dylan_Thomas_EAP',
+                               'Dylan_Thomas_WW',
+                               'Lewis_Carroll_Poets',
+                               'Lewis_Carroll_GPT', 
+                               'Lewis_Carroll_MA' , 
+                               'Lewis_Carroll_WS',
+                               'Lewis_Carroll_DT', 
+                               'Lewis_Carroll_EAP',
+                               'Lewis_Carroll_WW',
+                               'Walt_Whitman_Poets',
+                               'Walt_Whitman_GPT', 
+                               'Walt_Whitman_MA' , 
+                               'Walt_Whitman_WS',
+                               'Walt_Whitman_DT', 
+                               'Walt_Whitman_EAP',
+                               'Walt_Whitman_LC'
+                              ])
+  
+# return lexicalrichness variables
+def wordlist(text):
+    lex = LexicalRichness(text)
+    return lex.wordlist
+
+def words(text):
+    lex = LexicalRichness(text)
+    return lex.words
+
+def terms(text):
+    lex = LexicalRichness(text)
+    return lex.terms
+
+def preprocessor(text):
+    lex = LexicalRichness(text)
+    return lex.preprocessor
+
+def tokenizer(text):
+    lex = LexicalRichness(text)
+    return lex.tokenizer
+
+def ttr(text):
+    lex = LexicalRichness(text)
+    return lex.ttr
+
+def rttr(text):
+    lex = LexicalRichness(text)
+    return lex.rttr
+
+def cttr(text):
+    lex = LexicalRichness(text)
+    return lex.cttr
+
+def Herdan(text):
+    lex = LexicalRichness(text)
+    return lex.Herdan
+
+def Summer(text):
+    lex = LexicalRichness(text)
+    return lex.Summer
+
+def Dugast(text):
+    lex = LexicalRichness(text)
+    return lex.Dugast
+
+def Maas(text):
+    lex = LexicalRichness(text)
+    return lex.Maas
+
+def msttr(text):
+    lex = LexicalRichness(text)
+    return lex.msttr()
+
+def mattr(text):
+    lex = LexicalRichness(text)
+    return lex.mattr()
+
+def mtld(text):
+    lex = LexicalRichness(text)
+    return lex.mtld()
+
+def hdd(text):
+    lex = LexicalRichness(text)
+    return lex.hdd()
+
+def vocd(text):
+    lex = LexicalRichness(text)
+    return lex.vocd()
+
+def vocd_fig(text):
+    lex = LexicalRichness(text)
+    return lex.vocd_fig()
+
+# blob functions for reference
+    #blob = TextBlob(text)
+    #blob.tags           # [('The', 'DT'), ('titular', 'JJ'),
+                    #  ('threat', 'NN'), ('of', 'IN'), ...]
+
+    #blob.noun_phrases
+
+df['wordlist'] = df['text'].apply(wordlist)
+df['words'] = df['text'].apply(words)
+df['terms'] = df['text'].apply(terms)
+df['preprocessor'] = df['text'].apply(preprocessor)
+df['tokenizer'] = df['text'].apply(tokenizer)
+df['ttr'] = df['text'].apply(ttr)
+df['rttr'] = df['text'].apply(rttr)
+df['cttr'] = df['text'].apply(cttr)
+df['msttr'] = df['text'].apply(msttr)
+df['mtld'] = df['text'].apply(mtld)
+df['mattr'] = df['text'].apply(mattr)
+df['Herdan'] = df['text'].apply(Herdan)
+df['Summer'] = df['text'].apply(Summer)
+df['Dugast'] = df['text'].apply(Dugast)
+df['Maas'] = df['text'].apply(Maas)
+df['hdd'] = df['text'].apply(hdd)
+df['vocd'] = df['text'].apply(vocd)
+df['polarity'] = df['text'].apply(lambda tweet: TextBlob(tweet).sentiment.polarity)
+df['subjectivity'] = df['text'].apply(lambda tweet: TextBlob(tweet).sentiment.subjectivity)
+#df['subjectivity'] = df['text'].apply(blob.sentiment.subjectivity)
+#df['vocd_fig'] = df['text'].apply(vocd_fig)
+
+poem = ['Maya_Angelou_Poets','Maya_Angelou_GPT', 'Maya_Angelou_EAP' , 'Maya_Angelou_WS','Maya_Angelou_DT','Maya_Angelou_WW','Maya_Angelou_LC','William_Shakespeare_Poets','William_Shakespeare_GPT', 'William_Shakespeare_MA' , 'William_Shakespeare_EAP','William_Shakespeare_LC', 'William_Shakespeare_DT','William_Shakespeare_WW','Edgar_Allen_Poe_Poets','Edgar_Allen_Poe_GPT', 'Edgar_Allen_Poe_MA' , 'Edgar_Allen_Poe_WS','Edgar_Allen_Poe_LC', 'Edgar_Allen_Poe_DT','Edgar_Allen_Poe_WW','Dylan_Thomas_Poets','Dylan_Thomas_GPT', 'Dylan_Thomas_MA' , 'Dylan_Thomas_WS','Dylan_Thomas_LC', 'Dylan_Thomas_EAP','Dylan_Thomas_WW','Lewis_Carroll_Poets','Lewis_Carroll_GPT', 'Lewis_Carroll_MA' , 'Lewis_Carroll_WS','Lewis_Carroll_DT', 'Lewis_Carroll_EAP','Lewis_Carroll_WW','Walt_Whitman_Poets','Walt_Whitman_GPT', 'Walt_Whitman_MA' , 'Walt_Whitman_WS','Walt_Whitman_DT', 'Walt_Whitman_EAP','Walt_Whitman_LC']
+
+df = df.assign(poem=poem)
+
+poet = ['MA','GPT','EAP','WS','DT','WW','LC','WS','GPT','MA','EAP','LC','DT','WW','EAP','GPT','MA','WS','LC','DT','WW','DT','GPT','MA','WS','LC','EAP','WW','LC','GPT','MA','WS','DT','EAP','WW','WW','GPT','MA','WS','DT','EAP','LC']
+df = df.assign(poet=poet)
+
+title = ['Still I Rise','Still I Rise','Still I Rise','Still I Rise','Still I Rise','Still I Rise','Still I Rise','Sonnet 18','Sonnet 18','Sonnet 18','Sonnet 18','Sonnet 18','Sonnet 18','Sonnet 18','The Raven','The Raven','The Raven','The Raven','The Raven','The Raven','The Raven','Dont Go Gentle','Dont Go Gentle','Dont Go Gentle','Dont Go Gentle','Dont Go Gentle','Dont Go Gentle','Dont Go Gentle','Jabberwocky','Jabberwocky','Jabberwocky','Jabberwocky','Jabberwocky','Jabberwocky','Jabberwocky','O Captain','O Captain','O Captain','O Captain','O Captain','O Captain','O Captain']
+df = df.assign(title=title)
+
+pcode = [1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6,6,6,6,6,6,6]
+df = df.assign(pcode=pcode)
+
+```
+
+## Differences in Originals and GPT
+
+```{python}
+#| echo: false
+dfSentiment = df[['poet','polarity','subjectivity']]
+dfLexical_1 = df[['poet','wordlist','words','terms','ttr','rttr','cttr','msttr','mtld']]
+dfLexical_2 = df[['poet','mattr','Herdan','Summer','Dugast','Maas','hdd','vocd']]
+
+df1 =(dfLexical_1.
+ filter(regex='_Poets', axis='index').
+ filter(['words','terms']))
+
+df3 = df1[['words','terms']]
+
+df3['GPT_words'] = [252,117,314,168,166,203]
+df3['GPT_terms'] = [133,83,156,98,90,115]
+df3['words_var'] = abs(df3.words - df3.GPT_words)
+df3['terms_var']= abs(df3.terms - df3.GPT_terms)
+#df3['words_pct'] = abs(df3.words_var)/df.words
+df3 = df3.sort_values('words_var', ascending=False)
+
+df3
+```
+
+ The table above shows the difference between the original poems and the ChatGPT recreations. The table is sorted by words_var descending, which means the poems with the most significant word variation from the original to ChatGPT recreation are in the top rows of the table. Edgar Allen Poe's "The Raven" stands out the most, with 787 words fewer in the GPT recreation than in the original. Dylan Thomas' "Do Not Go Gentle Into That Good Night" matched precisely, which means a user who did not know the original could prompt ChatGPT to give them that poem verbatim. If users were to take ChatGPT's responses as a source of truth without verifying source material for these poems, they would get an abridged rendition of poem classics and would miss out on the wealth of the whole content from the original poets.
+
+## Lexical Analysis
+
+ The results from ChatGPT's responses are analyzed with the Python package LexicalRichness. This package has multiple lexical diversity measures that can classify text using various methods such as Type Token Ratio (TTR), Measure of Textual Lexical Diversity (MTLD), Vocabulary Density (voc-D), Summer's, Dungast's, Maas's, and Herdan's lexical diversity measures [@lex]. This package also has some standard text analysis tools, such as counting words and unique terms, which are helpful when comparing original works to what ChatGPT considers to be the original work. The original poems and ChatGPT results are combined into a data frame, and columns are added for each lexical score, accomplished using the Pƒandas package in Python because the format provides an efficient base for future visualizations and models.
+
+ Lexical diversity scores benchmark the richness of words within a text. For most of the scores, the higher the score is, the more diverse the text is. Type-Token Ratio (TTR) is the standard calculation for measuring lexical diversity. It divides the unique words (types) by the text's total words (tokens). The LexcialRichness has different iterations of this calculation to provide more scoring options for text. Mass, for example, takes the log of words minus the log of terms and divides it by the log of words squared to get an index version of the original TTR calculation. In this case, a lower score would indicate better lexical diversity.
+
+ The lexical analysis for this study has an extensive collection of lexical features. It offers multiple methods to evaluate vocabulary richness and diversity, which can be challenging when one is comparing different pieces of text to another. Text length becomes a factor, and that can affect the type-token ratio (TTR), but the Hypergeometric Distribution D (HD-D) and VOC-D do not require as much text to calculate scores [@lissón_ballier_2018].  
+
+### Heatmap
+
+ Selecting from the many features that the LexicalRichness package brought to this study's dataset is a challenging task, so a correlation heatmap is used to better understand the relationship between words, terms, and the various metrics available. A correlation matrix is created off a subset of the original data frame. Values range from negative one to one; higher correlations tend to land on the ends of the scale, and the less correlated features land in the middle [@mcdonald_2022]. A number closer to 1 means a postive corrleation to other features, as the value increases for the column, the value for the highly correlated column also increases. The inverse of this relationship is true with feautures that have values closer to -1. The grid below shows that from msttr to vocd, there are a lot of highly correlated features. These relationships are complex and need further analysis. By using principal component analysis, the two main features will be identified.A clustering model will be used to explore trends in other features.  
+
+```{python}
+#| echo: false
+dfLexical = df[['words','terms','ttr','rttr','cttr','msttr','mtld','mattr','Herdan','Summer','Dugast','Maas','hdd','vocd']]
+              
+dfHeatMap = dfLexical
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+data = dfHeatMap.corr()
+
+plt.figure(figsize=(12, 6))
+# create a heatmap of the dataset using Seaborn
+sns.heatmap(data, cmap='coolwarm', annot=True, fmt='.1f', linewidths=.5, square=True, cbar_kws={"shrink": .5})
+plt.show()
+```
+
+### PCA Analysis for Feature Selection
+
+ Principal Component Analysis (PCA) is a feature selection technique that helps identify feature importance within a dataset. This quote by Serafeim Loukas sums up PCA perfectly, "PCA is an orthogonal transformation of the data into a series of uncorrelated data living in the reduced PCA space that the first component explains the most variance in the data with each subsequent component explaining less" [@loukas_2023]. A great way to think of PCA is if there is a large dataset with numerical columns, PCA can help identify components, which is a selection of a few columns that explain the majority of the variance in that dataset. This analysis helps enhance the findings from the correlation heatmap.  
+
+```{python}
+from sklearn.decomposition import PCA
+
+# load your data into a pandas DataFrame
+df1 = dfLexical
+
+# separate the features from the target variable (if any)
+X = df1
+#= df.drop(['vocd'], axis=1)  # replace 'target_variable' with your target variable name, or remove this line if you don't have one
+
+# normalize the data (optional but recommended for PCA)
+from sklearn.preprocessing import StandardScaler
+
+X = StandardScaler().fit_transform(X)
+
+# perform PCA to reduce the dimensionality of the data
+pca = PCA(n_components=2)
+X_selected = pca.fit_transform(X)
+
+#loadings = pd.DataFrame(pca.components_, columns=df.columns)
+
+print(abs( pca.components_ ))
+
+```
+
+ The PCA was completed using this method with help from the scikit-learn package within Python. The results above show that the eleventh and twelfth columns (Dugast, Maas) have the highest feature importance for the first component. For the second component, words and terms have the most importance. The combined components explain 93.47% of the variation in the model.
+
+Below is the explained variance ratio the two components add up to get the 93.47% mentioned above.
+
+```{python}
+print(pca.explained_variance_ratio_)
+```
+
+### Cluster Analysis
+
+ Clustering analysis is a discipline within Machine Learning, specifically Unsupervised Learning, to evaluate trends within datasets. Unsupervised Learning is used in datasets with no labels, meaning that the scientist running the model does not have results to determine if a particular event is true or false. A great example is smoking datasets where the population has or does not have cancer. The smoking dataset is labeled and a prime candidate for Supervised Learning, trying to predict if a person in the dataset will or will not have cancer. Clustering Analysis is a great way to explore datasets to see if relationships exist within a dataset when no labels are present. The LexicalRichness package does not have documentation to tell users which metric is the best to use when determining lexical diversity, so clustering analysis will assist in evaluating trends within the data.  
+
+ These results are unsurprising with the heatmap; Maas was on the far end of the correlation matrix scale, close to negative one. The other highly correlated values were close but slightly edged out by Dugast's metric. Visualizing this relationship and trend was accomplished with k-means clustering analysis. To determine the number of clusters for each model iteration, the Elbow Method is used to help determine how many clusters exist in the data set with the selected features. One callout for this analysis section is that each clustering required three clusters, so there is only one screenshot of the preliminary analysis plot with the Elbow Method. The number of clusters is determined based on when this curve reaches an apex, and the curve looks like an arm raised with the curve at the elbow or apex.
+
+```{python}
+#| echo: false
+# cluster analysis
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+```
+
+```{python}
+#| echo: false
+# prepare data
+data = df[['Dugast','Maas']]
+              
+X = data.iloc[:, [0, 1]].values
+
+wcss = []
+for i in range(1, 11):
+    kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=300, n_init=10, random_state=0)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)
+plt.plot(range(1, 11), wcss)
+plt.title('Elbow Method')
+plt.xlabel('Number of clusters')
+plt.ylabel('WCSS')
+plt.show()
+
+```
+
+```{python , echo=true}
+#| echo: false
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+import plotly.express as px
+
+# load the dataset
+data = df
+
+# select the features you want to use for clustering
+X = data[['Dugast', 'Maas']]
+
+# pick the number of clusters you want to use
+n_clusters = 3
+
+# create a KMeans clustering model with the specified number of clusters
+kmeans = KMeans(n_clusters=n_clusters)
+
+# fit the model to the data
+kmeans.fit(X)
+
+# add the cluster labels to the original data
+data['cluster'] = kmeans.labels_
+
+#print(data[['cluster']])
+
+
+# create a new dataframe that includes the row label and cluster label for each data point
+df_hover = data[['cluster']].reset_index()
+
+# create a scatter plot of the data, colored by cluster label using discrete colors
+
+fig = px.scatter(data, x='Dugast', y='Maas', color='cluster', hover_data=[data.index.values],
+                  color_continuous_scale='portland')
+
+# show the plot
+fig.show()
+
+```
+
+ The cluster plot for the identified features for the primary PCA is very straightforward; there is a clear negative correlation in this data set for Maas and Dugast; as a Dugast score increases, the Maas score decreases. The reddish-pink cluster on the bottom right of the plot consists mainly of William Shakespeare's poem and recreations. The yellow cluster on the top left corner of the plot contains Dylan Thomas' and Lewis Carroll's recreations, which is an intriguing insight. Dugast's score is made of taking the log of the number of tokens and squaring it, then dividing that by the log of the number of tokens minus the log of the V, which is the number of types. Maas' calculation is an index of those terms, so it makes sense that they are correlated. Each lexical diversity measure is a different iteration or formulaic take on a previous method, so it is unsurprising that so many features showed extremes in the heat map.
+
+### Exploratory Clusters
+
+Based on the assessment that many of these features are correlated, other combinations were explored: Vocd and words, Herdan and mtld, hdd and Maas, mtld and Maas. These clusters offer further exploratory analysis in which metrics also make sense in explaining trends with this dataset. A critical callout is that of the other combinations explored; they never came as close to the clear linear relationship within their clustering as the PCA selected features to the plot. The vocd and words plot is an extreme outlier with the original Edgar Allen Poe poem as a cluster. The other three plots also have scattered values, and a line of best fit could be drawn, but the clustering plot that was based on the PCA analysis has the tightest grouping of values, indicating a clear negative correlation; as the Maas score decreases, the Dugast score increases.
+
+::: {.column-page layout-ncol="2"}
+```{python}
+#| echo: false
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+import plotly.express as px
+
+# load the dataset
+data = df
+
+# select the features you want to use for clustering
+X = data[['words', 'vocd']]
+
+# pick the number of clusters you want to use
+n_clusters = 3
+
+# create a KMeans clustering model with the specified number of clusters
+kmeans = KMeans(n_clusters=n_clusters)
+
+# fit the model to the data
+kmeans.fit(X)
+
+# add the cluster labels to the original data
+data['cluster'] = kmeans.labels_
+
+#print(data[['cluster']])
+
+# create a new dataframe that includes the row label and cluster label for each data point
+df_hover = data[['cluster']].reset_index()
+
+# create a scatter plot of the data, colored by cluster label using discrete colors
+
+fig = px.scatter(data, x='words', y='vocd', color='cluster',
+                  color_continuous_scale='portland',
+                hover_data=['poem']
+                )
+
+# show the plot
+fig.show()    
+```
+
+```{python}
+#| echo: false
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+import plotly.express as px
+
+# load the dataset
+data = df
+
+# select the features you want to use for clustering
+X = data[['mtld', 'Herdan']]
+
+# pick the number of clusters you want to use
+n_clusters = 3
+
+# create a KMeans clustering model with the specified number of clusters
+kmeans = KMeans(n_clusters=n_clusters)
+
+# fit the model to the data
+kmeans.fit(X)
+
+# add the cluster labels to the original data
+data['cluster'] = kmeans.labels_
+                   
+#print(data)
+
+# create a new dataframe that includes the row label and cluster label for each data point
+#df_hover = data[['cluster']].reset_index()
+
+
+fig = px.scatter(data, x='mtld', y='Herdan', color='cluster', hover_data = ['poem'], color_continuous_scale='portland')
+
+# show the plot
+fig.show()
+```
+:::
+
+::: {.column-page layout-ncol="2"}
+```{python}
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+import plotly.express as px
+
+# load the dataset
+data = df
+
+# select the features you want to use for clustering
+X = data[['Maas', 'hdd']]
+
+# pick the number of clusters you want to use
+n_clusters = 3
+
+# create a KMeans clustering model with the specified number of clusters
+kmeans = KMeans(n_clusters=n_clusters)
+
+# fit the model to the data
+kmeans.fit(X)
+
+# add the cluster labels to the original data
+data['cluster'] = kmeans.labels_
+
+#print(data[['cluster']])
+
+# create a new dataframe that includes the row label and cluster label for each data point
+df_hover = data[['cluster']].reset_index()
+
+# create a scatter plot of the data, colored by cluster label using discrete colors
+
+fig = px.scatter(data, x='Maas', y='hdd', color='cluster', hover_data=['poem'],
+                  color_continuous_scale='portland')
+
+# show the plot
+fig.show()
+
+
+```
+
+```{python}
+
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+import plotly.express as px
+
+# load the dataset
+data = df
+
+# select the features you want to use for clustering
+X = data[['Maas', 'mtld']]
+
+# pick the number of clusters you want to use
+n_clusters = 3
+
+# create a KMeans clustering model with the specified number of clusters
+kmeans = KMeans(n_clusters=n_clusters)
+
+# fit the model to the data
+kmeans.fit(X)
+
+# add the cluster labels to the original data
+data['cluster'] = kmeans.labels_
+
+#print(data[['cluster']])
+
+
+# create a new dataframe that includes the row label and cluster label for each data point
+df_hover = data[['cluster']].reset_index()
+
+      
+# create a scatter plot of the data, colored by cluster label using discrete colors
+
+fig = px.scatter(data, x='Maas', y='mtld', color='cluster', hover_data=['poem'],
+                  color_continuous_scale='portland')
+
+# show the plot
+fig.show()
+
+```
+:::
+
+## Sentiment Analysis
+
+ Sentiment Analysis provides feedback on whether data is positive, negative, or neutral. These sentiments are split into categories and scores. This study uses the TextBlob package in Python. "TextBlob is built on top of NLTK and Pattern also, it very easy to use and can process text in a few lines of code" [@bandgar_2021]. Natural Language Toolkit is a Python platform with many lexical resources available. It can tokenize text, an essential part of any NLP process because it allows users to look for keywords and apply their list or dictionary keywords they are looking to trend and analyze.
+
+ TextBlob shows sentiment with two categories, polarity and subjectivity. Polarity is a float value from -1 to 1. -1 is a negative sentiment, and 1 is a positive sentiment. 0 would indicate a neutral feeling. In other NLP exercises, these scores can change if a custom dictionary categorizes specific words as positive, negative, or neutral. Subjectivity is a float value that ranges from 0 to 1. The closer to 0 a subjectivity score, the more objective a statement is, and the statement would be deemed factual. A score of 1 would indicate personal views or beliefs and be more subjective [@bandgar_2021].
+
+ The combination of these two scores provides context to a sentiment score. For the poems in this study, does ChatGPT tend to make poems more positive than originals? Are they more subjective or objective? The polarity and subjectivity scores for each poem were added to the data frame. NLP is a large field within Data Science, and this study incorporates a subset of the analysis to evaluate AI-generated text. The goal behind the analysis is to get a score and compare each poem's permutation. The plots below will allow a user to filter by the legend, and data points have a hover function that shows more detail for each point.
+
+### Sentiment Scatterplots
+
+```{python}
+#| echo: false
+import plotly.express as px
+fig = px.scatter(df, x="polarity", y="subjectivity", color="title", symbol="title", size="subjectivity",
+                hover_data=['poem'], title="Sentiment Analysis by Poem")
+fig.show()
+```
+
+Here is a view by GPT Style Re-creations:
+
+```{python}
+#| echo: false
+import plotly.express as px
+fig = px.scatter(df, x="polarity", y="subjectivity", color="poet", symbol="poet", size="subjectivity",
+                hover_data=['poem'], title="Sentiment Analysis by Style")
+fig.show()
+```
+
+The analysis below uses the Sentiment Analysis by Poem plot for analysis.
+
+  Here is the link to ChatGPT chat prompts and responses
+ ([link to ChatGPT Responses](http://rpubs.com/datadataguy13/1451725){target="_blank"})
+
+ "The Raven" has an interesting trend; it ranks very high on subjectivity and low on the polarity scale, meaning that the original poem contains much personal sentiment, which makes sense, but the polarity is almost neutral. This score should be more negative than neutral. The recreation using Maya Angelou's style came close in polarity but struggled with subjectivity. William Shakespeare and Lewis Carroll's styles came out overly positive compared to the other styles.
+
+ Sonnet 18 is the first plot where we see the trend that GPT and original poems overlap on sentiment scoring. This aligns with the previous analysis on the differences between the originals and GPT-prompted originals. If the words are close and the terms are pretty much the same, it makes sense that the subjectivity and polarity scores reflect it. The plots use Plotly and can be filtered in the Python environment to see the overlap. An interesting trend with this poem is that Dylan Thomas and William Shakespeare's points are grouped, showing positivity and opinion. In contrast, the Lewis Carroll and Maya Angelou recreations show positivity but come off as more objective than subjective with their scores.
+
+ The analysis for "Jabberwocky" shows intriguing trends. The original and GPT versions show objectivity and neutral sentiment, whereas Walt Whitman, Maya Angelou, Dylan Thomas, and William Shakespeare's renditions show more subjectiveness and positive sentiment. Edgar Allen Poe's version of "Jabberwocky" was more negative and subjective than the original, but considering the poetic signature of his style, this is expected.
+
+ Walt Whitman's "O Captain! My Captain!" followed a similar trend, with Edgar Allen Poe's style being more subjective and having a negative sentiment. There is evident passion and strong emotions in the original poem, but what is surprising is that the original poem scored a relatively neutral sentiment and is very objective. The other renditions follow the trend from the previous plot, with more positive and opinionated versions of the original.
+
+ Dylan Thomas' "Don Not Go Gentle Into That Good Night" had an interesting trend: every other version of the original had a more positive and opinionated sentiment than the original, and the Edgar Allen Poe version was the most positive and subjective. This poem captures a lot of emotion and covers rich themes of maturation and losing one's parent. This analysis is very high level and scratches the surface of a poem's true meaning. This study shows that it is challenging to articulate poetic themes and their impact with simply using numerical scores.
+
+ Evaluating sentiment from AI-generated text is an interesting NLP topic because it implies that AI can generate something that is scored for feeling, which, if machines could feel, would imply that they can pass the Turing test, classifying them as sentient. ChatGPT's bot reassures users that it has no opinions or feelings but can generate text showing a wide range of emotions. The TextBlob package provided a simple and effective way of classifying these feelings for each poem and recreation. For "Still I Rise," the GPT rendition of the original was close in terms of words and terms and scored very close to the original. However, the William Shakespeare and Walt Whitman renditions took on a different sentiment signature. With higher subjectivity and polarity, it takes on a more subjective and positive feeling, which does not align with the original.
+
+## AI-Text Classification Analysis
+
+#### High Level AI-Detector Findings
+
+Detecting AI-generated text is a complex and constantly evolving part of NLP. This analysis will use two detectors and test their effectiveness (Open-AI and GPTZero).
+
+| Open-AI Score                 | Count |
+|-------------------------------|-------|
+| Text too short                | 15    |
+| Very Unlikely AI-generated    | 11    |
+| Unlikely AI-generated         | 8     |
+| Unclear if it is AI-generated | 8     |
+
+ The classifier results from Open-AI's AI-generated result output will evaluate the text detector's effectiveness. The table below shows that eleven of the forty-two results were unlikely AI-generated. Eight of the forty-two results were unclear if they were AI-generated and fifteen were too short to be assessed by the AI detector. These were William Shakespeare's "Sonnet 18" and Dylan Thomas' "Do Not Go Gentle Into That Good Night."
+
+ The poems that were unclear if they were AI-generated are shown below, and the poems that stood out are "Jabberwocky" and "The Raven." Lewis Carroll's poem uses obtuse words to punctuate stanzas and add flavor to a dragon-slaying epoch. It is not too surprising to see this show up as a possible AI-generated text. "The Raven" has a unique signature and is the longest poem in this study, contributing to its complexity.
+
+| GPTZero Score                                                            | Count |
+|--------------------------------------------------------|----------------|
+| Likely to be entirely written by human                                   | 41    |
+| Most likely written by a human with some sentences with low perplexities | 1     |
+
+ GPTZero's overall scoring for this study is less discerning than Open-AI's detector. It classified forty-one poems to be written by a human, and one had sentences with low perplexities. The irony in these results is that they classified Maya Angelou's "Still I Rise" original with the text with sentences with low perplexities. In NLP terms, perplexity is how well a model predicts the words in a sample. The lower the score, the less complex the words are and easier to predict. Burstiness is another score introduced with GPTZero, and burstiness looks at spikes within sentences and looks for variation in perplexity. Humans will vary in their rhythm with writing where, as a bot will conform to patterns making it easier to predict. In the subsequent plots, it will become evident that this poem was the richest in average perplexity and burstiness. Five of the six original poets scored in the top ten for burstiness and perplexity, meaning the originals were classified as authentically written by a human correctly and were scored that way too. Walt Whitman's GPT poem scored higher than the original, but it was still close to the original. The poem recreations that scored the lowest were different versions of Maya Angelou's "Still I Rise" and Edgar Allen Poe's "The Raven." The plots were created using the Python library Plotly and can be filtered dynamically.
+
+```{python}
+#| echo: false
+dfClassification = df[['GPTDectScore','GPTZeroScore','GPTZeroAVGPerp','GPTZeroBurstiness']]
+
+#dfClassification["GPTDectScore"].replace("The classifier considers the text to be very unlikely AI-generated.", "Very Unlikely AI-generated")
+dfClassification['GPTDectScore'] = dfClassification['GPTDectScore'].str.replace('The classifier considers the text to be very unlikely AI-generated*', 'Very Unlikely AI-generated')
+
+dfClassification['GPTDectScore'] = dfClassification['GPTDectScore'].str.replace('The classifier considers the text to be unlikely AI-generated*', 'Unlikely AI-generated')
+
+dfClassification['GPTDectScore'] = dfClassification['GPTDectScore'].str.replace('The classifier considers the text to be unclear if it is AI-generated*', 'Unclear if it is AI-generated')
+
+dfClassification['GPTDectScore'] = dfClassification['GPTDectScore'].str.replace('Please enter at least 1,000 characters*', 'Text too short')
+
+dfClassification['GPTDectScore'] = dfClassification['GPTDectScore'].str.split('.').str[0]
+
+dfClassTotals = dfClassification['GPTDectScore'].value_counts()
+
+#dfClassTotals2 = dfClassTotals.reset_index().rename(columns={'index': 'GPT Text','GPTDectScore', 'Counts'})
+
+# dfClassTable = dfClassTable().rename(columns={'index': 'GPTDectScore', 'GPTDectScore': 'count'})
+
+#GPT_Scores = pd.crosstab(index=dfClassification['GPTDectScore'], columns='count')
+
+
+#print(fruit_counts_sorted)
+
+#print(dfClassTotals)
+
+
+```
+
+```{python}
+#| echo: false
+#dfClassification[dfClassification['GPTDectScore'].str.contains("Unclear")]
+```
+
+```{python}
+#print(dfClassification.GPTZeroScore.value_counts())
+```
+
+### Bar Plot Showing Results from GPTZero
+
+This bar chart explores the GPT perplexity and burstiness scores and ranks them in descending order for the dataset.
+
+```{python}
+#| echo: false
+dfClass = df[['poet','GPTZeroAVGPerp','GPTZeroBurstiness','poem']]
+
+#dfClass['GPTZeroBurstiness'] = dfClass['GPTZeroBurstiness'].astype(float)
+#dfClass['GPTZeroAVGPerp'] = dfClass['GPTZeroAVGPerp'].astype(float)
+
+dfClass['GPTZeroBurstiness'] = pd.to_numeric(dfClass['GPTZeroBurstiness'])
+dfClass['GPTZeroAVGPerp'] = pd.to_numeric(dfClass['GPTZeroAVGPerp'])
+
+
+# print(result)
+```
+
+```{python}
+#| echo: false
+import plotly.graph_objs as go
+import pandas as pd
+
+dfClass = dfClass.sort_values('GPTZeroAVGPerp', ascending=True)
+
+# create plotly figure
+fig = go.Figure()
+
+# add horizontal bar trace
+fig.add_trace(go.Bar(
+    x=dfClass['GPTZeroAVGPerp'],
+    y= dfClass['poem'],
+    name = 'Perplexity',
+    orientation='h'
+))
+
+fig.add_trace(go.Bar(
+    x=dfClass['GPTZeroBurstiness'],
+    y=dfClass['poem'],
+    name='Burstiness',
+    orientation='h'
+))
+
+# customize layout
+fig.update_layout(
+    title='Classification from GPTZero in Ranking Order',
+    xaxis_title='GPT Zero Scores',
+
+    barmode='stack',
+    bargap=0.3,
+    bargroupgap=0.2,
+    margin=dict(l=20, r=20, t=50, b=20),
+    height=700
+)
+
+# display plot
+# fig.show()
+
+```
+
+ This plot is insightful, showing GPTZero Avg. Perplexity and Burstiness scores, but the Maya Angelou data point is an extreme outlier, which makes it challenging to see other scores and their overall impact within the study. Another cluster analysis was created to explore these relationships using a new dataset excluding Maya Angelou's original poem. Three clusters were chosen, and for cluster 2 in yellow, Walt Whitman and William Shakespeare trended high with average perplexity and burstiness scores. The GPT version of Walt Whitman's original scored the highest with this model. Edgar Allen Poe and Lewis Carroll make up cluster 1, the reddish pink cluster in the center of the plot. Dylan Thomas and most of his poem re-creations fall into the 0 cluster in blue, another callout with this clustering on the lower left of the plot, most GPT renditions grouped here. This plot shows that it is words chosen by original poets concerning perplexity and burstiness or the length of sentences and stanzas are challenging to accomplish for ChatGPT.
+
+```{python}
+df2 = df[df["GPTZeroBurstiness"] != 9505.563]
+# prepare data
+data = df2[['GPTZeroAVGPerp','GPTZeroBurstiness']]
+              
+X = data.iloc[:, [0, 1]].values
+
+wcss = []
+for i in range(1, 11):
+    kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=300, n_init=10, random_state=0)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)
+plt.plot(range(1, 11), wcss)
+plt.title('Elbow Method')
+plt.xlabel('Number of clusters')
+plt.ylabel('WCSS')
+plt.show()
+```
+
+```{python}
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+import plotly.express as px
+
+# load the dataset
+data = df2
+
+# select the features you want to use for clustering
+X = data[['GPTZeroAVGPerp', 'GPTZeroBurstiness']]
+
+# pick the number of clusters you want to use
+n_clusters = 3
+
+# create a KMeans clustering model with the specified number of clusters
+kmeans = KMeans(n_clusters=n_clusters)
+
+# fit the model to the data
+kmeans.fit(X)
+
+# add the cluster labels to the original data
+data['cluster'] = kmeans.labels_
+
+#print(data[['cluster']])
+
+# create a new dataframe that includes the row label and cluster label for each data point
+df_hover = data[['cluster']].reset_index()
+
+# create a scatter plot of the data, colored by cluster label using discrete colors
+
+fig = px.scatter(data, x='GPTZeroBurstiness', y='GPTZeroAVGPerp', color='cluster', hover_data=['poem'],color_continuous_scale='portland'
+)
+
+# show the plot
+fig.show()
+```
+
+## Discussion
+
+ ChatGPT is an exciting development within AI, bringing up valid concerns within academics. How do professors know ChatGPT did not write a term paper? Edward Tian took on this challenge with his GPTZero site. His story is fascinating because he is a 22-year-old student in the Computer Science program with minor in Journalism at Princeton. He acknowledges that his detector needs to be foolproof and is working to improve it. Here is a quote from his NPR interview, "For so long, AI has been a black box where we really don't know what is going on inside," he said. "And with GPTZero, I wanted to start pushing back and fighting against that" [@bowman_2023].
+
+ This study explored three main areas within NLP: lexical diversity, sentiment analysis, and AI text detection. Two other areas were initially explored but later abandoned because they needed to produce more substantial results. The first area was an iambic meter text classifier that could predict which century the text was written in; this was going to be explored with the original poems and their recreations to see if the styles line up with the centuries identified by the classifier. The text had to be ordered and arranged in a way for the classifier to run. It was a considerably manual process, with three-quarters of the results saying 15th century, which needed to be more accurate for any originals or re-creations.
+
+ The second area explored but not further studied was measuring the meter for each poem. A few Python packages can achieve this, but they could not classify Sonnet 18 correctly for this analysis. To troubleshoot this issue, ChatGPT was asked for code to identify the poetic meter. After multiple prompts and responses, it began to make up Python libraries that could accomplish this task. This is one of the more troubling aspects of ChatGPT. It can provide false confidence in complex tasks, especially with coding. For straightforward tasks, it is very responsive, but when it has a weak knowledge base on an esoteric subject, it tries to double down on its faulty knowledge base.
+
+ ChatGPT gets credit for specific tasks, and it was helpful for styling charts in Plotly and getting the PCA analysis to run correctly. It did not have the context base to select which chart or model would be most effective for this study's analysis, but it had enough suggestions to start more profound research. This issue has been noticed in the programming community, and Stack Overflow banned AI-generated answers to coding questions because the risk it posed of misleading users was too high [@vincent_2022]. ChatGPT can write impressively complex Structured Query Language (SQL) queries but does not know the platform infrastructure to run the most optimized code. ChatGPT can be a helpful tool but cannot replace domain knowledge and experience.
+
+## Conclusion
+
+ Gathering clean data is essential to any scientific study, and for this exercise, there were no missing data points, making analysis much more straightforward. The dataset was small, with only 42 rows and 16 columns. There were 672 observations in this study. The LexicalRichness and TextBlob packages processed the small dataset with ease. The more challenging part of the data collection process was running the poems and various GPT recreations through the Open-AI and GPTZero classifiers and appending the data points to the existing data frame.
+
+ The lexical analysis provided the framework for measuring and scoring text. When judging how rich a text is, there are many measures to pick from. Maas and Dugast were the most decisive measures identified with the PCA for this study. In future iterations of this study, the measures picked for the strongest correlation could change based on the text selected for the study. Unsupervised Learning, specifically cluster analysis, showed how correlated the features were, and the subsequent plots explored how other features trended within the dataset.
+
+ The classification analysis introduced four features to the dataset, all manually gathered. The original inspiration for the classification assessment of this study came from Michael Crichton's *Jurassic Park*. In the book, dinosaurs are brought back to life and are genetically modified slightly in the process. Are these recreations dinosaurs, or are they genetically modified monsters? Are these poem recreations considered poems, or are they literary abominations from their originals? The true answer is that some recreations are so bad that they are comical. Both AI detectors failed to identify the recreations, but the GPTZero detector did provide a scoring method to better subset the recreations.
+
+ The variations discovered with the sentiment analysis showed that ChatGPT could provide text in different styles that feel different from the original creations. The AI can deviate and take on other styles and tones; it is not always accurate, and contextually it can be a way off point, but it is an exciting feature of the chatbot. Students may prompt for an essay and then request that the given result be recreated using Maya Angelou's or Edgar Allen Poe's style to try and trick AI detectors.
+
+ ChatGPT can be a valuable and helpful tool, but it needs to be improved in a few areas regarding being a knowledge source. For the poems analyzed in this study, it did not source "The Raven" correctly, and most poems were slightly different from their source, leading an untrained eye to build false confidence. Generating lexicaly diverse and rich tect is a challenge for AI and ChatGPT. If the source poem is lexicaly rich, it could create something close but not organically. This reinforces the chatbot's shortcoming of lacking substantial domain expertise.
+
+```{python}
+#print(pca.explained_variance_ratio_)
+```
+
+```{python}
+#print(pca.explained_variance_)
+```

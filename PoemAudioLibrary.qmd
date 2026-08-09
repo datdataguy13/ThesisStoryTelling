@@ -1,0 +1,63 @@
+---
+title: "Raw Data: ChatGPT Poem Recreations, with Audio Readings"
+jupyter: python3
+execute:
+  echo: false
+  warning: false
+format:
+  html:
+    embed-resources: true
+---
+
+## About this page
+
+This page holds the raw dataset behind [Recreating Literary Works Using ChatGPT and Evaluating Results with NLP Analysis](http://rpubs.com/datadataguy13/1011253) — the same 42 text responses originally shared as a Google Doc, now with each one read aloud so you can listen as well as read.
+
+For each of the six poems, there are seven versions: the original poem, ChatGPT's own unprompted retelling, and five ChatGPT recreations written in the style of the other five poets in this study. All 42 readings use the same synthesized voice (macOS "Moira") so the narration style stays constant and only the text changes.
+
+```{python}
+import json, base64, html as html_lib
+from IPython.display import display, Markdown, HTML
+
+rows = {r["key"]: r["text"] for r in json.load(open("poems_data.json", encoding="utf-8"))}
+
+poems = [
+    ("Maya_Angelou", "Still I Rise", "Maya Angelou"),
+    ("William_Shakespeare", "Sonnet 18: Shall I Compare Thee to a Summer's Day?", "William Shakespeare"),
+    ("Edgar_Allen_Poe", "The Raven", "Edgar Allan Poe"),
+    ("Dylan_Thomas", "Do Not Go Gentle Into That Good Night", "Dylan Thomas"),
+    ("Lewis_Carroll", "Jabberwocky", "Lewis Carroll"),
+    ("Walt_Whitman", "O Captain! My Captain!", "Walt Whitman"),
+]
+
+version_order = ["Poets", "GPT", "EAP", "WS", "DT", "LC", "WW", "MA"]
+version_label = {
+    "Poets": "Original — written by the poet",
+    "GPT": "ChatGPT's own retelling (no style prompt)",
+    "EAP": "Recreated in the style of Edgar Allan Poe",
+    "WS": "Recreated in the style of William Shakespeare",
+    "DT": "Recreated in the style of Dylan Thomas",
+    "LC": "Recreated in the style of Lewis Carroll",
+    "WW": "Recreated in the style of Walt Whitman",
+    "MA": "Recreated in the style of Maya Angelou",
+}
+
+def audio_tag(key):
+    with open(f"audio/{key}.m4a", "rb") as f:
+        b64 = base64.b64encode(f.read()).decode("ascii")
+    return f'<audio controls style="width:100%;max-width:480px"><source src="data:audio/mp4;base64,{b64}" type="audio/mp4">Your browser does not support the audio element.</audio>'
+
+def poem_block(text):
+    escaped = html_lib.escape(text).replace("\n", "<br>")
+    return f'<div style="white-space:normal;line-height:1.5;padding:0.75em 1em;border-left:3px solid #ccc;margin:0.5em 0;">{escaped}</div>'
+
+for prefix, title, poet in poems:
+    display(Markdown(f"## {title} — *{poet}*"))
+    for suffix in version_order:
+        key = f"{prefix}_{suffix}"
+        if key not in rows:
+            continue
+        display(Markdown(f"#### {version_label[suffix]}"))
+        display(HTML(poem_block(rows[key])))
+        display(HTML(audio_tag(key)))
+```
