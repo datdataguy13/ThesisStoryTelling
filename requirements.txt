@@ -1,0 +1,28 @@
+# Python dependencies for rendering the .qmd files in this repo via
+# Quarto's Jupyter engine (jupyter: python3 in each file's YAML header).
+# Tested with Python 3.11 (Anaconda distribution).
+#
+# After installing, register a Jupyter kernel named "python3" so Quarto
+# can find it:
+#   python -m ipykernel install --user --name python3
+
+pandas==1.5.3
+numpy==1.24.4
+matplotlib==3.8.0
+seaborn>=0.13.2
+scikit-learn==1.2.2
+plotly==5.20.0
+textblob==0.18.0
+lexicalrichness==0.5.1
+ipykernel
+
+# --- seaborn note ---
+# Must be >=0.13. seaborn 0.12.x combined with matplotlib>=3.8 has a bug
+# where sns.heatmap(annot=True) only draws annotation text on the first
+# row of cells (colors/grid render fine, the numbers just silently
+# disappear). Fixed upstream in seaborn 0.13.
+
+# --- optional, asset-regeneration only ---
+# Only needed if you're rebuilding slides/*.jpg from ThesisPresentation.pdf
+# (see README). Not required to render any of the three .qmd files.
+pymupdf==1.28.2

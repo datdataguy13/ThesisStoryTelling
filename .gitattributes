@@ -1,0 +1,20 @@
+# These are all build output or binary media assets, not hand-authored
+# source. Marking them generated/vendored keeps GitHub's language
+# detector (Linguist) from attributing the repo's language stats to
+# them — without this, the ~29MB of compiled, self-contained HTML pages
+# drown out the actual Python/R content and GitHub reports the repo as
+# 100% HTML.
+*.html linguist-generated=true
+*.pdf linguist-generated=true
+*.docx linguist-generated=true
+audio/** linguist-generated=true
+slides/** linguist-generated=true
+
+# Ensure these are treated as binary (no text diffs, no line-ending
+# conversion).
+*.html -text
+*.pdf -text binary
+*.docx -text binary
+*.jpg -text binary
+*.png -text binary
+*.m4a -text binary
