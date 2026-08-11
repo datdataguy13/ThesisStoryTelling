@@ -38,7 +38,6 @@ slides/                    slides/slide-NN.jpg — each PDF page rasterized to a
                             image, embedded by ThesisSlides.qmd
 
 images/                    Misc. images referenced from ThesisStoryTelling.qmd
-_quarto.yml                Quarto project file
 requirements.txt           Python dependencies (see Setup below)
 rsconnect/                 Local RPubs publish bookkeeping (gitignored)
 
