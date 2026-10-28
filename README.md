@@ -13,9 +13,9 @@ AI-text detectors.
 
 | Page | Contents |
 |---|---|
-| [Main study](http://rpubs.com/datadataguy13/1011253) | Full write-up: methodology, sentiment analysis, lexical diversity, PCA, clustering |
-| [Raw data + audio](http://rpubs.com/datadataguy13/1451725) | All 42 ChatGPT responses (6 poems × 7 versions each), each with a narrated audio reading |
-| [Defense slides](http://rpubs.com/datadataguy13/1451731) | Click-through viewer for the thesis defense deck |
+| [Main study](https://connect.posit.cloud/datdataguy13/content/019fef14-cb51-f06c-9152-8948cb8023fd) | Full write-up: methodology, sentiment analysis, lexical diversity, PCA, clustering |
+| [Raw data + audio](https://connect.posit.cloud/datdataguy13/content/019fef16-695a-505e-e336-2cc50ba00cd7) | All 42 ChatGPT responses (6 poems × 7 versions each), each with a narrated audio reading |
+| [Defense slides](https://connect.posit.cloud/datdataguy13/content/019fef18-cf53-d6ee-d607-6eb72c7f8140) | Click-through viewer for the thesis defense deck |
 | [Defense video](https://www.youtube.com/watch?v=a3Pnd_-uEGw) | Recorded thesis defense (embedded inline on the main page) |
 
 ## Repository structure
